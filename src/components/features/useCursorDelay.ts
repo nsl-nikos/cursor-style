@@ -39,7 +39,7 @@ export const useCursorDelay = (
       // Adjust alpha based on delay. With delay as 10, alpha should be minimum (more delay).
       // As delay approaches 0, alpha should increase, reducing the delay effect.
       // This maps delay from [0, 10] to alpha [1, 0.1] (inversely proportional)
-      const alpha = 1 - delay * 0.09; // Adjust this formula as needed
+      const alpha = 1 - delay * 0.09;
       const newX = lerp(position.x, targetPosition.current.x, alpha);
       const newY = lerp(position.y, targetPosition.current.y, alpha);
       setPosition({ x: newX, y: newY });

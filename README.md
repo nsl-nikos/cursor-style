@@ -140,6 +140,6 @@ Each cursor component accepts specific props for customization:
 
 Encountered an issue or have a feature request? Reach out through my [Github account](https://github.com/nsl-nikos)
 
-## 8. Contributing
+<!-- ## 8. Contributing
 
-Contributions are welcome! Please see our contributing guidelines for more details.
+Contributions are welcome! -->
