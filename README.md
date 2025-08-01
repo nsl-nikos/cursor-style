@@ -50,11 +50,8 @@ npm install cursor-style
 
 **Comprehensive Customization**: Beyond size and color, props like **`useMixBlendDifferenc`**` provide creative control over blending modes, allowing for dynamic visual effects that react to web page backgrounds.
 
-## 4. Demo
 
-### [Live Demo](https://custom-cursor-lemon.vercel.app)
-
-## 5. Visualisation
+## 4. Visualisation
 
 ![First Cursor](https://github.com/N1kos9/calculator/assets/139173199/85a57eb9-fd37-4d3c-bab1-0d65e19675e3)
 
@@ -62,9 +59,7 @@ npm install cursor-style
 
 ![Third Cursor](https://github.com/N1kos9/calculator/assets/139173199/2070b0a6-c4d5-4964-b519-718051eed7ef)
 
-## 6. Usage
-
-### Basic Usage
+## 5. Usage
 
 Integrate custom cursors into your project with ease. Here are examples for each cursor type, showcasing how to utilize various props for customization:
 
@@ -143,7 +138,7 @@ Each cursor component accepts specific props for customization:
 
 ## 7. Support
 
-Encountered an issue or have a feature request? Reach out through my [Github account](https://github.com/N1kos9)
+Encountered an issue or have a feature request? Reach out through my [Github account](https://github.com/nsl-nikos)
 
 ## 8. Contributing
 

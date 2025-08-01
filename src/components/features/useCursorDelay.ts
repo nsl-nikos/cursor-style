@@ -8,7 +8,7 @@ interface Position {
 const lerp = (start: number, end: number, alpha: number) =>
   (1 - alpha) * start + alpha * end;
 
-// Set a default value for delay in the function parameters
+
 export const useCursorDelay = (
   delay: number = 0,
   initialPosition: Position
@@ -21,7 +21,6 @@ export const useCursorDelay = (
     const handleMouseMove = (event: MouseEvent) => {
       targetPosition.current = { x: event.clientX, y: event.clientY };
       if (delay === 0) {
-        // Immediate update for delay = 0
         setPosition(targetPosition.current);
       }
     };
@@ -31,10 +30,10 @@ export const useCursorDelay = (
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [delay]); // Include delay in dependencies array to handle immediate update
+  }, [delay]);
 
   useEffect(() => {
-    if (delay === 0) return; // Skip the lerp animation if delay is 0
+    if (delay === 0) return; 
 
     const updatePosition = () => {
       // Adjust alpha based on delay. With delay as 10, alpha should be minimum (more delay).

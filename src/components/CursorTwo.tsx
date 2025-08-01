@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useCursorDelay } from "./features/useCursorDelay";
 
 export const CursorTwo: React.FC<{
-  delay?: number; // Make delay optional
+  delay?: number; 
   size?: number;
   sizeDot?: number;
   sizeOutline?: number;
@@ -12,11 +12,11 @@ export const CursorTwo: React.FC<{
 }> = ({
   delay,
   size,
-  sizeDot = size || 10, // Default size for dot
-  sizeOutline = size || 45, // Default size for outline
-  bgColorDot = "white", // Default background color for dot
-  bgColorOutline = "white", // Default background color for outline
-  useMixBlendDifference = true, // Default mix blend mode to true
+  sizeDot = size || 10, 
+  sizeOutline = size || 45, 
+  bgColorDot = "white", 
+  bgColorOutline = "white", 
+  useMixBlendDifference = true, 
 }) => {
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorOutlineRef = useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ export const CursorTwo: React.FC<{
       if (cursorDotRef.current) {
         cursorDotRef.current.style.left = `${event.clientX}px`;
         cursorDotRef.current.style.top = `${event.clientY}px`;
-        cursorDotRef.current.style.transform = "translate(-50%, -50%)"; // Ensure dot is centered
+        cursorDotRef.current.style.transform = "translate(-50%, -50%)"; 
       }
     };
 
@@ -41,7 +41,7 @@ export const CursorTwo: React.FC<{
     if (cursorOutlineRef.current) {
       cursorOutlineRef.current.style.left = `${delayedPosition.x}px`;
       cursorOutlineRef.current.style.top = `${delayedPosition.y}px`;
-      cursorOutlineRef.current.style.transform = "translate(-50%, -50%)"; // Ensure outline is centered
+      cursorOutlineRef.current.style.transform = "translate(-50%, -50%)"; 
     }
   }, [delayedPosition]);
 

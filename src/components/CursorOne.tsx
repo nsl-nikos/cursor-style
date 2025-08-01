@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useCursorDelay } from "./features/useCursorDelay"; // Adjust import path as needed
+import { useCursorDelay } from "./features/useCursorDelay"; 
 
 export const CursorOne: React.FC<{
-  delay?: number; // Make delay optional
+  delay?: number; 
   size?: number;
   bgColor?: string;
   useMixBlendDifference?: boolean;
 }> = ({
   delay,
-  size = 20, // Default size
-  bgColor = "white", // Default background color set to white
-  useMixBlendDifference = true, // Option to enable or disable mix blend mode
+  size = 20,
+  bgColor = "white", 
+  useMixBlendDifference = true, 
 }) => {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const { position } = useCursorDelay(delay, { x: 0, y: 0 });
@@ -40,7 +40,7 @@ export const CursorOne: React.FC<{
     transition: "transform 0.2s ease",
     backgroundColor: bgColor,
     mixBlendMode: useMixBlendDifference ? "difference" : "normal",
-    zIndex: 9999, // Ensure it's above most elements
+    zIndex: 9999, 
   };
 
   return <div style={cursorStyle} />;

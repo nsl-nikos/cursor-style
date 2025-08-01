@@ -3,17 +3,16 @@ import { baseCursorStyle } from "../styles/styles";
 import { useCursorDelay } from "./features/useCursorDelay";
 
 export const CursorThree: React.FC<{
-  delay?: number; // Make delay optional
+  delay?: number; 
   size?: number;
-  bgColor?: string; // Background color for the cursor
-  useMixBlendDifference?: boolean; // Option to enable or disable mixBlendMode difference
+  bgColor?: string; 
+  useMixBlendDifference?: boolean;
 }> = ({
   delay,
-  size = 35, // Default size
-  bgColor = "white", // Default background color
-  useMixBlendDifference = true, // mixBlendMode difference enabled by default
+  size = 35, 
+  bgColor = "white", 
+  useMixBlendDifference = true, 
 }) => {
-  // Use the hook for delayed position
   const { position: delayedPosition } = useCursorDelay(delay, { x: 0, y: 0 });
 
   return (
@@ -24,12 +23,12 @@ export const CursorThree: React.FC<{
         left: `${delayedPosition.x}px`,
         top: `${delayedPosition.y}px`,
         borderRadius: "50%",
-        border: `2px solid ${bgColor}`, // Use dynamic border color
+        border: `2px solid ${bgColor}`, 
         transform: "translate(-50%, -50%)",
         pointerEvents: "none",
-        width: `${size}px`, // Adjustable size
-        height: `${size}px`, // Maintain aspect ratio
-        mixBlendMode: useMixBlendDifference ? "difference" : "normal", // Dynamically set mixBlendMode
+        width: `${size}px`,
+        height: `${size}px`,
+        mixBlendMode: useMixBlendDifference ? "difference" : "normal",
         zIndex: 9999,
         backgroundColor: "transparent",
       }}

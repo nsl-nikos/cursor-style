@@ -1,6 +1,6 @@
 import React from "react";
 import CursorOne from "./CursorOne";
-import { CursorTwo } from "./CursorTwo"; // Ensure correct import if necessary
+import { CursorTwo } from "./CursorTwo"; 
 import CursorThree from "./CursorThree";
 
 export const CustomCursor: React.FC<{
@@ -9,13 +9,13 @@ export const CustomCursor: React.FC<{
   size?: number;
   sizeDot?: number;
   sizeOutline?: number;
-  bgColor?: string; // Assuming this is for CursorOne
-  bgColorDot?: string; // New prop for CursorTwo's dot color
-  bgColorOutline?: string; // New prop for CursorTwo's outline color
+  bgColor?: string; 
+  bgColorDot?: string; 
+  bgColorOutline?: string; 
   useMixBlendDifference?: boolean;
 }> = ({
   type,
-  delay = 0, // Provide a default value for delay
+  delay = 0, 
   size,
   sizeDot,
   sizeOutline,
@@ -24,7 +24,7 @@ export const CustomCursor: React.FC<{
   bgColorOutline,
   useMixBlendDifference,
 }) => {
-  const clampedDelay = Math.max(0, Math.min(delay, 1000)); // Adjusted max delay based on realistic expectations
+  const clampedDelay = Math.max(0, Math.min(delay, 1000)); 
 
   switch (type) {
     case "one":
@@ -42,13 +42,12 @@ export const CustomCursor: React.FC<{
           delay={clampedDelay}
           sizeDot={sizeDot}
           sizeOutline={sizeOutline}
-          bgColorDot={bgColorDot} // Pass bgColorDot to CursorTwo
-          bgColorOutline={bgColorOutline} // Pass bgColorOutline to CursorTwo
-          useMixBlendDifference={useMixBlendDifference} // Pass useMixBlendDifference to CursorTwo
+          bgColorDot={bgColorDot} 
+          bgColorOutline={bgColorOutline}
+          useMixBlendDifference={useMixBlendDifference}
         />
       );
     case "three":
-      // Update CursorThree if necessary
       return (
         <CursorThree
           delay={clampedDelay}
