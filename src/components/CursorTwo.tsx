@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useCursorDelay } from "./features/useCursorDelay";
-
+import { useHoverDetection } from "./features/hoverContext";
 export const CursorTwo: React.FC<{
   delay?: number; 
   size?: number;
@@ -22,7 +22,7 @@ export const CursorTwo: React.FC<{
   const cursorOutlineRef = useRef<HTMLDivElement>(null);
 
   const { position: delayedPosition } = useCursorDelay(delay, { x: 0, y: 0 });
-
+  const  isHovering  = useHoverDetection();
   useEffect(() => {
     const moveCursor = (event: MouseEvent) => {
       if (cursorDotRef.current) {

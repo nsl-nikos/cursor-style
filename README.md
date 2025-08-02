@@ -34,22 +34,13 @@ npm install cursor-style
 
 ## 3. New in This Release
 
-- **Optional delay Prop**: Introduced flexibility in cursor movement, allowing for immediate or delayed cursor response.
+- **Centralized Hover Detection Hook**: Improved performance by moving hover detection logic into a shared React hook instead of duplicating it in each cursor component.
 
 - **size Customization**: New property to adjust the cursor size, enabling better control over the cursor's appearance.
 
-- **Background Color Options**: Added **`bgColor`**, **`bgColorDot`**, and **`bgColorOutline`** props to customize the cursor's color scheme to fit your design.
+- **Expanded Hoverable Element Support**:The hover detection now recognizes a broader set of interactive elements including links, buttons, inputs, textareas, and any element with a **`hoverable`** css property (such as divs, span, section, etc).
 
-- **Unique Cursor Components**: Expanded the cursor library with distinct styles, each supporting specific customizations:
-
-  - **`CursorOne`**: Offers a simple, elegant cursor with size and background color customization.
-  - **`CursorTwo`**: Features a dot and outline design, with additional **`sizeDot`** and sizeOutline props for intricate adjustments.
-  - **`CursorThree`**: A minimalist approach with a transparent cursor that supports border customization.
-
-- **Enhanced Performance**: Optimizations ensure smoother animations and responsiveness, even with multiple custom cursors active.
-
-**Comprehensive Customization**: Beyond size and color, props like **`useMixBlendDifferenc`**` provide creative control over blending modes, allowing for dynamic visual effects that react to web page backgrounds.
-
+- **Hover Visual Feedback Limited to CursorOne**: While the hover detection works for multiple cursor types, currently only **`CursorOne`** visually responds by scaling on hover.
 
 ## 4. Visualisation
 

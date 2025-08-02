@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useCursorDelay } from "./features/useCursorDelay"; 
-
+import { useHoverDetection } from "./features/hoverContext";
 export const CursorOne: React.FC<{
   delay?: number; 
   size?: number;
@@ -12,21 +12,9 @@ export const CursorOne: React.FC<{
   bgColor = "white", 
   useMixBlendDifference = true, 
 }) => {
-  const [isHovering, setIsHovering] = useState<boolean>(false);
+  // const [isHovering, setIsHovering] = useState<boolean>(false);
+  const isHovering = useHoverDetection();
   const { position } = useCursorDelay(delay, { x: 0, y: 0 });
-
-  useEffect(() => {
-    const updateHoverState = (event: MouseEvent) => {
-      const hoverableElements = ["A", "BUTTON", "INPUT", "TEXTAREA"];
-      const elemBelow = document.elementFromPoint(event.clientX, event.clientY);
-      setIsHovering(
-        !!elemBelow && hoverableElements.includes(elemBelow.tagName)
-      );
-    };
-
-    document.addEventListener("mousemove", updateHoverState);
-    return () => document.removeEventListener("mousemove", updateHoverState);
-  }, []);
 
   const cursorStyle: React.CSSProperties = {
     width: `${size}px`,

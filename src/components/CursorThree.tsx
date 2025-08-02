@@ -1,7 +1,7 @@
 import React from "react";
 import { baseCursorStyle } from "../styles/styles";
 import { useCursorDelay } from "./features/useCursorDelay";
-
+import { useHoverDetection } from "./features/hoverContext";
 export const CursorThree: React.FC<{
   delay?: number; 
   size?: number;
@@ -14,7 +14,7 @@ export const CursorThree: React.FC<{
   useMixBlendDifference = true, 
 }) => {
   const { position: delayedPosition } = useCursorDelay(delay, { x: 0, y: 0 });
-
+  const  isHovering  = useHoverDetection();
   return (
     <div
       style={{

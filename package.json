@@ -1,7 +1,7 @@
 {
   "name": "cursor-style",
-  "version": "1.4.0",
-  "description": "Multiple choose cursors prebuilt to choose from",
+  "version": "1.4.1",
+  "description": "Multiple prebuilt cursor styles to choose from",
   "main": "dist/cjs/index.js",
   "files": [
     "dist"
@@ -22,7 +22,8 @@
     }
   },
   "scripts": {
-    "build": "rollup -c --bundleConfigAsCjs"
+    "build": "rollup -c --bundleConfigAsCjs",
+    "dev": "rollup -c --bundleConfigAsCjs --watch"
   },
   "keywords": [
     "cursor",
