@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useCursorDelay } from "./features/useCursorDelay"; 
+import React from "react";
+import { useCursorDelay } from "./features/useCursorDelay";
 import { useHoverDetection } from "./features/hoverContext";
+
 export const CursorOne: React.FC<{
-  delay?: number; 
+  delay?: number;
   size?: number;
   bgColor?: string;
   useMixBlendDifference?: boolean;
+  scaleOnHover?: number;
 }> = ({
   delay,
   size = 20,
-  bgColor = "white", 
-  useMixBlendDifference = true, 
+  bgColor = "white",
+  useMixBlendDifference = true,
+  scaleOnHover = 1.5,
 }) => {
-  // const [isHovering, setIsHovering] = useState<boolean>(false);
   const isHovering = useHoverDetection();
   const { position } = useCursorDelay(delay, { x: 0, y: 0 });
 
@@ -24,11 +26,11 @@ export const CursorOne: React.FC<{
     left: `${position.x}px`,
     top: `${position.y}px`,
     pointerEvents: "none",
-    transform: `translate(-50%, -50%)${isHovering ? " scale(5)" : ""}`,
+    transform: `translate(-50%, -50%) scale(${isHovering ? scaleOnHover : 1})`,
     transition: "transform 0.2s ease",
     backgroundColor: bgColor,
     mixBlendMode: useMixBlendDifference ? "difference" : "normal",
-    zIndex: 9999, 
+    zIndex: 9999,
   };
 
   return <div style={cursorStyle} />;

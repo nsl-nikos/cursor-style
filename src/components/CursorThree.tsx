@@ -2,19 +2,23 @@ import React from "react";
 import { baseCursorStyle } from "../styles/styles";
 import { useCursorDelay } from "./features/useCursorDelay";
 import { useHoverDetection } from "./features/hoverContext";
+
 export const CursorThree: React.FC<{
-  delay?: number; 
+  delay?: number;
   size?: number;
-  bgColor?: string; 
+  bgColor?: string;
   useMixBlendDifference?: boolean;
+  scaleOnHover?: number;
 }> = ({
   delay,
-  size = 35, 
-  bgColor = "white", 
-  useMixBlendDifference = true, 
+  size = 35,
+  bgColor = "white",
+  useMixBlendDifference = true,
+  scaleOnHover = 1.5,
 }) => {
   const { position: delayedPosition } = useCursorDelay(delay, { x: 0, y: 0 });
-  const  isHovering  = useHoverDetection();
+  const isHovering = useHoverDetection();
+
   return (
     <div
       style={{
@@ -23,14 +27,15 @@ export const CursorThree: React.FC<{
         left: `${delayedPosition.x}px`,
         top: `${delayedPosition.y}px`,
         borderRadius: "50%",
-        border: `2px solid ${bgColor}`, 
-        transform: "translate(-50%, -50%)",
+        border: `2px solid ${bgColor}`,
+        transform: `translate(-50%, -50%) scale(${isHovering ? scaleOnHover : 1})`,
         pointerEvents: "none",
         width: `${size}px`,
         height: `${size}px`,
         mixBlendMode: useMixBlendDifference ? "difference" : "normal",
         zIndex: 9999,
         backgroundColor: "transparent",
+        transition: "transform 0.2s ease",
       }}
     />
   );

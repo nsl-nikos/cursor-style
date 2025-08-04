@@ -9,5 +9,6 @@ export declare const CustomCursor: React.FC<{
     bgColorDot?: string;
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
+    scaleOnHover?: number;
 }>;
 export default CustomCursor;

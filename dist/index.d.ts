@@ -5,6 +5,7 @@ declare const CursorOne: React.FC<{
     size?: number;
     bgColor?: string;
     useMixBlendDifference?: boolean;
+    scaleOnHover?: number;
 }>;
 
 declare const CursorTwo: React.FC<{
@@ -15,6 +16,7 @@ declare const CursorTwo: React.FC<{
     bgColorDot?: string;
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
+    scaleOnHover?: number;
 }>;
 
 declare const CursorThree: React.FC<{
@@ -22,6 +24,7 @@ declare const CursorThree: React.FC<{
     size?: number;
     bgColor?: string;
     useMixBlendDifference?: boolean;
+    scaleOnHover?: number;
 }>;
 
 declare const CustomCursor: React.FC<{
@@ -34,6 +37,7 @@ declare const CustomCursor: React.FC<{
     bgColorDot?: string;
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
+    scaleOnHover?: number;
 }>;
 
 export { CursorOne, CursorThree, CursorTwo, CustomCursor };

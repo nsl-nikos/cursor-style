@@ -1,6 +1,6 @@
 import React from "react";
 import CursorOne from "./CursorOne";
-import { CursorTwo } from "./CursorTwo"; 
+import { CursorTwo } from "./CursorTwo";
 import CursorThree from "./CursorThree";
 
 export const CustomCursor: React.FC<{
@@ -9,13 +9,14 @@ export const CustomCursor: React.FC<{
   size?: number;
   sizeDot?: number;
   sizeOutline?: number;
-  bgColor?: string; 
-  bgColorDot?: string; 
-  bgColorOutline?: string; 
+  bgColor?: string;
+  bgColorDot?: string;
+  bgColorOutline?: string;
   useMixBlendDifference?: boolean;
+  scaleOnHover?: number;
 }> = ({
   type,
-  delay = 0, 
+  delay = 0,
   size,
   sizeDot,
   sizeOutline,
@@ -23,8 +24,9 @@ export const CustomCursor: React.FC<{
   bgColorDot,
   bgColorOutline,
   useMixBlendDifference,
+  scaleOnHover,
 }) => {
-  const clampedDelay = Math.max(0, Math.min(delay, 1000)); 
+  const clampedDelay = Math.max(0, Math.min(delay, 1000));
 
   switch (type) {
     case "one":
@@ -34,6 +36,7 @@ export const CustomCursor: React.FC<{
           size={size}
           bgColor={bgColor}
           useMixBlendDifference={useMixBlendDifference}
+          scaleOnHover={scaleOnHover}
         />
       );
     case "two":
@@ -42,9 +45,10 @@ export const CustomCursor: React.FC<{
           delay={clampedDelay}
           sizeDot={sizeDot}
           sizeOutline={sizeOutline}
-          bgColorDot={bgColorDot} 
+          bgColorDot={bgColorDot}
           bgColorOutline={bgColorOutline}
           useMixBlendDifference={useMixBlendDifference}
+          scaleOnHover={scaleOnHover}
         />
       );
     case "three":
@@ -54,6 +58,7 @@ export const CustomCursor: React.FC<{
           size={size}
           bgColor={bgColor}
           useMixBlendDifference={useMixBlendDifference}
+          scaleOnHover={scaleOnHover}
         />
       );
     default:

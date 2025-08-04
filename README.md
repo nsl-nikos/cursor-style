@@ -25,7 +25,6 @@ npm install cursor-style
 - **Flexible Configuration**: Features such as optional movement delay allow for dynamic interaction customization.
 
 - **Bug Fixes and Improvements**:
-
   - Fixed issue where cursors would not center correctly at larger sizes.
 
   - Adjusted animation speeds for improved consistency across different cursor types.
@@ -34,13 +33,15 @@ npm install cursor-style
 
 ## 3. New in This Release
 
-- **Centralized Hover Detection Hook**: Improved performance by moving hover detection logic into a shared React hook instead of duplicating it in each cursor component.
+- **Hover Scale for All Cursors**: The hover animation (where the cursor grows when hovering over buttons, links, etc.) used to only work on **`CursorOne`**. Now it works on all three cursor styles — including **`CursorTwo`** (dot + outline) and **`CursorThree`** (bordered circle).
 
-- **size Customization**: New property to adjust the cursor size, enabling better control over the cursor's appearance.
+- **New prop `scaleOnHover`:** You can now control how much the cursor scales on hover using the new `scaleOnHover` prop.
 
-- **Expanded Hoverable Element Support**:The hover detection now recognizes a broader set of interactive elements including links, buttons, inputs, textareas, and any element with a **`hoverable`** css property (such as divs, span, section, etc).
+  - Set it to **`1`**  (default) if you don’t want any scale effect.
 
-- **Hover Visual Feedback Limited to CursorOne**: While the hover detection works for multiple cursor types, currently only **`CursorOne`** visually responds by scaling on hover.
+  - Go higher like **`1.5`** or **`2`** to make it pop.
+
+  - Set it to **`0`**  if you want the cursor to disappear when hovering.
 
 ## 4. Visualisation
 
@@ -130,7 +131,3 @@ Each cursor component accepts specific props for customization:
 ## 7. Support
 
 Encountered an issue or have a feature request? Reach out through my [Github account](https://github.com/nsl-nikos)
-
-<!-- ## 8. Contributing
-
-Contributions are welcome! -->

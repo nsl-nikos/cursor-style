@@ -4,5 +4,6 @@ export declare const CursorThree: React.FC<{
     size?: number;
     bgColor?: string;
     useMixBlendDifference?: boolean;
+    scaleOnHover?: number;
 }>;
 export default CursorThree;

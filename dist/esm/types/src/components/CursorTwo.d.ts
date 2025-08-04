@@ -7,5 +7,6 @@ export declare const CursorTwo: React.FC<{
     bgColorDot?: string;
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
+    scaleOnHover?: number;
 }>;
 export default CursorTwo;
