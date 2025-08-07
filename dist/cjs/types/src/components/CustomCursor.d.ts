@@ -10,5 +10,9 @@ export declare const CustomCursor: React.FC<{
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
+    clickEffect?: "pulse";
+    clickEffectColor?: string;
+    clickEffectSize?: number;
+    clickEffectDuration?: number;
 }>;
 export default CustomCursor;

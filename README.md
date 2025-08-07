@@ -24,24 +24,36 @@ npm install cursor-style
 
 - **Flexible Configuration**: Features such as optional movement delay allow for dynamic interaction customization.
 
-- **Bug Fixes and Improvements**:
+<!-- - **Bug Fixes and Improvements**:
   - Fixed issue where cursors would not center correctly at larger sizes.
 
   - Adjusted animation speeds for improved consistency across different cursor types.
 
-  - Resolved bug where the `delay` prop was incorrectly required, now allowing for more flexible configuration.
+  - Resolved bug where the `delay` prop was incorrectly required, now allowing for more flexible configuration. -->
+
 
 ## 3. New in This Release
 
-- **Hover Scale for All Cursors**: The hover animation (where the cursor grows when hovering over buttons, links, etc.) used to only work on **`CursorOne`**. Now it works on all three cursor styles — including **`CursorTwo`** (dot + outline) and **`CursorThree`** (bordered circle).
+- **New `clickEffect` Prop**  
+  The new `clickEffect` prop is introduced for all cursor components to enable a pulse animation on mouse clicks. Currently, the only supported value is `"pulse"`.
+  
+- **Control Pulse Animation with the new prop**  
+  The pulse effect can be customized with three additional props:  
+  - `clickEffectColor` — sets the pulse color (default: inherits the cursor's dot color or `"white"`).  
+  - `clickEffectSize` — controls the scale size of the pulse (default: `10`).  
+  - `clickEffectDuration` — controls the duration of the pulse animation in milliseconds (default: `300`).
 
-- **New prop `scaleOnHover`:** You can now control how much the cursor scales on hover using the new `scaleOnHover` prop.
+- **Usage Example:**  
+  ```tsx
+  <CursorOne
+    clickEffect="pulse"
+    clickEffectColor="red"
+    clickEffectSize={2}
+    clickEffectDuration={500}
+  />
+  ```
 
-  - Set it to **`1`**  (default) if you don’t want any scale effect.
-
-  - Go higher like **`1.5`** or **`2`** to make it pop.
-
-  - Set it to **`0`**  if you want the cursor to disappear when hovering.
+ - **If no `clickEffect` prop is provided, the cursor components behave as before, without any pulse animation.**
 
 ## 4. Visualisation
 

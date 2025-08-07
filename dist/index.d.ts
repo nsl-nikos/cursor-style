@@ -6,6 +6,10 @@ declare const CursorOne: React.FC<{
     bgColor?: string;
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
+    clickEffect?: "pulse";
+    clickEffectColor?: string;
+    clickEffectSize?: number;
+    clickEffectDuration?: number;
 }>;
 
 declare const CursorTwo: React.FC<{
@@ -17,6 +21,10 @@ declare const CursorTwo: React.FC<{
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
+    clickEffect?: "pulse";
+    clickEffectColor?: string;
+    clickEffectSize?: number;
+    clickEffectDuration?: number;
 }>;
 
 declare const CursorThree: React.FC<{
@@ -25,6 +33,10 @@ declare const CursorThree: React.FC<{
     bgColor?: string;
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
+    clickEffect?: "pulse";
+    clickEffectColor?: string;
+    clickEffectDuration?: number;
+    clickEffectSize?: number;
 }>;
 
 declare const CustomCursor: React.FC<{
@@ -38,6 +50,10 @@ declare const CustomCursor: React.FC<{
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
+    clickEffect?: "pulse";
+    clickEffectColor?: string;
+    clickEffectSize?: number;
+    clickEffectDuration?: number;
 }>;
 
 export { CursorOne, CursorThree, CursorTwo, CustomCursor };

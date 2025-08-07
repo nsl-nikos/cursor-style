@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useCursorDelay } from "./features/useCursorDelay";
 import { useHoverDetection } from "./features/hoverContext";
+// import { ClickEffectLayer } from "./features/click-effect/ClickEffectLayer";
+import { useClickEffect } from "./features/click-effect/useClickEffect";
 
 export const CursorTwo: React.FC<{
   delay?: number;
@@ -11,6 +13,10 @@ export const CursorTwo: React.FC<{
   bgColorOutline?: string;
   useMixBlendDifference?: boolean;
   scaleOnHover?: number;
+  clickEffect?: "pulse";
+  clickEffectColor?: string;
+  clickEffectSize?: number;
+  clickEffectDuration?: number;
 }> = ({
   delay,
   size,
@@ -20,12 +26,17 @@ export const CursorTwo: React.FC<{
   bgColorOutline = "white",
   useMixBlendDifference = true,
   scaleOnHover = 1.5,
+  clickEffect,
+  clickEffectColor = bgColorDot,
+  clickEffectSize = 1.5,
+  clickEffectDuration = 300,
 }) => {
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorOutlineRef = useRef<HTMLDivElement>(null);
 
   const { position: delayedPosition } = useCursorDelay(delay, { x: 0, y: 0 });
   const isHovering = useHoverDetection();
+  const { triggerClickEffect } = useClickEffect();
 
   useEffect(() => {
     const moveCursor = (event: MouseEvent) => {
@@ -48,37 +59,55 @@ export const CursorTwo: React.FC<{
     }
   }, [delayedPosition, isHovering, scaleOnHover]);
 
+  useEffect(() => {
+    if (!clickEffect) return;
+    const handler = (e: MouseEvent) => {
+      triggerClickEffect(
+        e.clientX,
+        e.clientY,
+        clickEffect,
+        clickEffectColor,
+        clickEffectSize,
+        clickEffectDuration
+      );
+    };
+    window.addEventListener("click", handler);
+    return () => window.removeEventListener("click", handler);
+  }, [clickEffect, clickEffectColor, clickEffectSize, clickEffectDuration]);
+
   const mixBlendModeValue = useMixBlendDifference ? "difference" : "normal";
 
   return (
     <>
       <div
         ref={cursorDotRef}
+        className="cursor"
         style={{
           width: `${sizeDot}px`,
           height: `${sizeDot}px`,
+          backgroundColor: bgColorDot,
+          mixBlendMode: mixBlendModeValue,
+          zIndex: 9999,
+          borderRadius: "50%",
+          transition: "transform 0.2s ease",
           position: "fixed",
           pointerEvents: "none",
-          zIndex: 9999,
-          backgroundColor: bgColorDot,
-          borderRadius: "50%",
-          mixBlendMode: mixBlendModeValue,
-          transition: "transform 0.2s ease",
         }}
       />
       <div
         ref={cursorOutlineRef}
+        className="cursor"
         style={{
           width: `${sizeOutline}px`,
           height: `${sizeOutline}px`,
-          borderRadius: "50%",
           border: `2px solid ${bgColorOutline}`,
-          pointerEvents: "none",
+          backgroundColor: "transparent",
           mixBlendMode: mixBlendModeValue,
           zIndex: 9998,
-          backgroundColor: "transparent",
-          position: "fixed",
+          borderRadius: "50%",
           transition: "transform 0.2s ease",
+          position: "fixed",
+          pointerEvents: "none",
         }}
       />
     </>

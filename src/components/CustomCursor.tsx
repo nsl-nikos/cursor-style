@@ -14,6 +14,10 @@ export const CustomCursor: React.FC<{
   bgColorOutline?: string;
   useMixBlendDifference?: boolean;
   scaleOnHover?: number;
+  clickEffect?: "pulse";
+  clickEffectColor?: string;
+  clickEffectSize?: number;
+  clickEffectDuration?: number;
 }> = ({
   type,
   delay = 0,
@@ -25,6 +29,10 @@ export const CustomCursor: React.FC<{
   bgColorOutline,
   useMixBlendDifference,
   scaleOnHover,
+  clickEffect,
+  clickEffectColor,
+  clickEffectSize,
+  clickEffectDuration,
 }) => {
   const clampedDelay = Math.max(0, Math.min(delay, 1000));
 
@@ -37,6 +45,10 @@ export const CustomCursor: React.FC<{
           bgColor={bgColor}
           useMixBlendDifference={useMixBlendDifference}
           scaleOnHover={scaleOnHover}
+          clickEffect={clickEffect}
+          clickEffectColor={clickEffectColor}
+          clickEffectSize={clickEffectSize}
+          clickEffectDuration={clickEffectDuration}
         />
       );
     case "two":
@@ -49,6 +61,10 @@ export const CustomCursor: React.FC<{
           bgColorOutline={bgColorOutline}
           useMixBlendDifference={useMixBlendDifference}
           scaleOnHover={scaleOnHover}
+          clickEffect={clickEffect}
+          clickEffectColor={clickEffectColor}
+          clickEffectSize={clickEffectSize}
+          clickEffectDuration={clickEffectDuration}
         />
       );
     case "three":
@@ -59,6 +75,10 @@ export const CustomCursor: React.FC<{
           bgColor={bgColor}
           useMixBlendDifference={useMixBlendDifference}
           scaleOnHover={scaleOnHover}
+          clickEffect={clickEffect}
+          clickEffectColor={clickEffectColor}
+          clickEffectSize={clickEffectSize}
+          clickEffectDuration={clickEffectDuration}
         />
       );
     default:

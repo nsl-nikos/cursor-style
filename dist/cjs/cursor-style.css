@@ -1,0 +1,2 @@
+.cursor{border-radius:50%;cursor:none;mix-blend-mode:difference;pointer-events:none;position:fixed;transition:transform .2s ease;z-index:2147483647}.click-effect-pulse{animation-fill-mode:forwards;animation-name:cursor-pulse}.click-effect-ripple{animation-fill-mode:forwards;animation-name:cursor-ripple}@keyframes cursor-pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.5)}to{opacity:1;transform:scale(1)}}@keyframes cursor-ripple{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(2)}}
+/*# sourceMappingURL=cursor-style.css.map */

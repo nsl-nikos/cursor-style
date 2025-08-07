@@ -12,7 +12,6 @@ export function useHoverDetection(
         setIsHovering(false);
         return;
       }
-
       let matches = false;
       try {
         matches = elemBelow.matches(hoverSelector);

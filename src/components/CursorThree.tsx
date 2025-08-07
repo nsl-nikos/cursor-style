@@ -1,7 +1,8 @@
-import React from "react";
-import { baseCursorStyle } from "../styles/styles";
+import React, { useEffect } from "react";
 import { useCursorDelay } from "./features/useCursorDelay";
 import { useHoverDetection } from "./features/hoverContext";
+import { useClickEffect } from "./features/click-effect/useClickEffect";
+import { baseCursorStyle } from "../styles/styles";
 
 export const CursorThree: React.FC<{
   delay?: number;
@@ -9,33 +10,56 @@ export const CursorThree: React.FC<{
   bgColor?: string;
   useMixBlendDifference?: boolean;
   scaleOnHover?: number;
+  clickEffect?: "pulse";
+  clickEffectColor?: string;
+  clickEffectDuration?: number;
+  clickEffectSize?: number;
 }> = ({
   delay,
   size = 35,
   bgColor = "white",
   useMixBlendDifference = true,
   scaleOnHover = 1.5,
+  clickEffect,
+  clickEffectColor = "white",
+  clickEffectDuration = 300,
+  clickEffectSize = 1.5,
 }) => {
   const { position: delayedPosition } = useCursorDelay(delay, { x: 0, y: 0 });
   const isHovering = useHoverDetection();
+  const { triggerClickEffect } = useClickEffect();
+
+  useEffect(() => {
+    if (!clickEffect) return;
+
+    const handler = (e: MouseEvent) => {
+      triggerClickEffect(
+        e.clientX,
+        e.clientY,
+        clickEffect,
+        clickEffectColor,
+        clickEffectSize,
+        clickEffectDuration
+      );
+    };
+
+    window.addEventListener("click", handler);
+    return () => window.removeEventListener("click", handler);
+  }, [clickEffect, clickEffectColor, clickEffectSize, clickEffectDuration]);
 
   return (
     <div
+      className="cursor"
       style={{
         ...baseCursorStyle,
-        position: "fixed",
         left: `${delayedPosition.x}px`,
         top: `${delayedPosition.y}px`,
-        borderRadius: "50%",
         border: `2px solid ${bgColor}`,
         transform: `translate(-50%, -50%) scale(${isHovering ? scaleOnHover : 1})`,
-        pointerEvents: "none",
         width: `${size}px`,
         height: `${size}px`,
         mixBlendMode: useMixBlendDifference ? "difference" : "normal",
-        zIndex: 9999,
         backgroundColor: "transparent",
-        transition: "transform 0.2s ease",
       }}
     />
   );

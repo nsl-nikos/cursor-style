@@ -8,5 +8,9 @@ export declare const CursorTwo: React.FC<{
     bgColorOutline?: string;
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
+    clickEffect?: "pulse";
+    clickEffectColor?: string;
+    clickEffectSize?: number;
+    clickEffectDuration?: number;
 }>;
 export default CursorTwo;
