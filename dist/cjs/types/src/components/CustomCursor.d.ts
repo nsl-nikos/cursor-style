@@ -1,18 +1,29 @@
 import React from "react";
-export declare const CustomCursor: React.FC<{
-    type: string;
+interface BaseCursorProps {
     delay?: number;
-    size?: number;
-    sizeDot?: number;
-    sizeOutline?: number;
-    bgColor?: string;
-    bgColorDot?: string;
-    bgColorOutline?: string;
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
+    size?: number;
     clickEffect?: "pulse";
     clickEffectColor?: string;
     clickEffectSize?: number;
     clickEffectDuration?: number;
-}>;
+}
+interface CursorOneProps extends BaseCursorProps {
+    type: "one";
+    bgColor?: string;
+}
+interface CursorTwoProps extends BaseCursorProps {
+    type: "two";
+    sizeDot?: number;
+    sizeOutline?: number;
+    bgColorDot?: string;
+    bgColorOutline?: string;
+}
+interface CursorThreeProps extends BaseCursorProps {
+    type: "three";
+    bgColor?: string;
+}
+type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps;
+export declare const CustomCursor: React.FC<CustomCursorProps>;
 export default CustomCursor;

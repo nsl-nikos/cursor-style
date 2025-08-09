@@ -1,1 +1,1 @@
-export declare function useHoverDetection(hoverSelector?: string): boolean;
+export declare function useHoverDetection(): boolean;

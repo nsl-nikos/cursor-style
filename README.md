@@ -1,145 +1,238 @@
-# Prebuilt Cursor Styles
+# cursor-style
 
 Elevate your web application's user experience with cursor-style, a sophisticated library designed to customize and animate the cursor. From adding elegance and interactivity to standing out, cursor-style provides an array of options to enhance your site's interactive elements with minimal effort.
 
 ![npm](https://img.shields.io/npm/v/cursor-style)
 
-## 1. installation
+##  Installation
 
 ```bash
 npm install cursor-style
 ```
 
-## 2. Features
+##  Features
 
-- **Custom Cursor Shapes**: Easily transform the default cursor into a variety of shapes to match the context of different web page elements.
+- **Three Cursor Types**: Choose from simple circle, dot+outline, or outline-only cursors
+- **Click Effects**: Built-in pulse animations on mouse clicks
+- **Extensive Customization**: Control size, colors, delays, and animations
+- **Optimized Performance**: Lightweight bundle with smooth 60fps animations
+- **TypeScript Ready**: Full type safety with cursor-specific prop validation
+- **Seamless Integration**: Drop-in solution for any React project
+- **Mix Blend Modes**: Built-in support for difference blend mode effects
 
-- **Cursor Animations**: Introduce animations to the cursor for interactive feedback in a stylish and engaging manner.
+## 🆕 What's New in v1.4.4
 
-- **Seamless Integration**: Effortlessly integrate cursor-style into any web project with just a few lines of code.
+### Major API Improvements
+- **New Unified API**: Introducing `CustomCursor` component with type-safe props
+- **Enhanced Type Safety**: TypeScript prevents invalid prop combinations
+- **Massive Bundle Reduction**: 41% smaller than previous version
+- **Click Effects**: Built-in pulse animations for all cursor types
 
-- **Extensive Configurability**: Tailor size, color, animation speed, and more to perfectly align with your site's aesthetic.
+### Breaking Changes
+- Individual cursor imports are NOT available anymore, `CustomCursor` is now the only approach
+- Improved prop validation - invalid props will show TypeScript errors
 
-- **Optimized Performance**: Engineered for efficiency, ensuring fluid animations that do not hinder site responsiveness.
-
-- **Flexible Configuration**: Features such as optional movement delay allow for dynamic interaction customization.
-
-<!-- - **Bug Fixes and Improvements**:
-  - Fixed issue where cursors would not center correctly at larger sizes.
-
-  - Adjusted animation speeds for improved consistency across different cursor types.
-
-  - Resolved bug where the `delay` prop was incorrectly required, now allowing for more flexible configuration. -->
-
-
-## 3. New in This Release
-
-- **New `clickEffect` Prop**  
-  The new `clickEffect` prop is introduced for all cursor components to enable a pulse animation on mouse clicks. Currently, the only supported value is `"pulse"`.
-  
-- **Control Pulse Animation with the new prop**  
-  The pulse effect can be customized with three additional props:  
-  - `clickEffectColor` — sets the pulse color (default: inherits the cursor's dot color or `"white"`).  
-  - `clickEffectSize` — controls the scale size of the pulse (default: `10`).  
-  - `clickEffectDuration` — controls the duration of the pulse animation in milliseconds (default: `300`).
-
-- **Usage Example:**  
-  ```tsx
-  <CursorOne
-    clickEffect="pulse"
-    clickEffectColor="red"
-    clickEffectSize={2}
-    clickEffectDuration={500}
-  />
-  ```
-
- - **If no `clickEffect` prop is provided, the cursor components behave as before, without any pulse animation.**
-
-## 4. Visualisation
+## Cursor Types
 
 ![First Cursor](https://github.com/N1kos9/calculator/assets/139173199/85a57eb9-fd37-4d3c-bab1-0d65e19675e3)
 
-![Second Cursor](https://github.com/N1kos9/calculator/assets/139173199/46c59406-2a45-464a-9321-19989c08bb3d)
+
+![Second Cursor](https://github.com/N1kos9/calculator/assets/139173199/46c59406-2a45-464a-9321-19989c08bb3d) 
+
 
 ![Third Cursor](https://github.com/N1kos9/calculator/assets/139173199/2070b0a6-c4d5-4964-b519-718051eed7ef)
 
-## 5. Usage
 
-Integrate custom cursors into your project with ease. Here are examples for each cursor type, showcasing how to utilize various props for customization:
+## 📖 Quick Start
 
-**CursorOne - Basic Circle**
-
-```tsx
-import { CursorOne } from "cursor-style";
-
-function App() {
-  return (
-    <CursorOne size={30} delay={5} bgColor="red" useMixBlendDifference={true} />
-  );
-}
-```
-
-**CursorTwo - Dot and Outline**
-
-```tsx
-import { CursorTwo } from "cursor-style";
-
-function App() {
-  return (
-    <CursorTwo
-      size={40}
-      delay={5}
-      sizeDot={10}
-      sizeOutline={35}
-      bgColorDot="blue"
-      bgColorOutline="green"
-    />
-  );
-}
-```
-
-**CursorThree - Transparent with Border**
-
-```tsx
-import { CursorThree } from "cursor-style";
-
-function App() {
-  return <CursorThree size={25} delay={2} />;
-}
-```
-
-**CustomCursor - Flexible Type Selection**
+### CustomCursor Component
 
 ```tsx
 import { CustomCursor } from "cursor-style";
 
 function App() {
   return (
-    <CustomCursor
-      type="two"
-      size={40}
-      delay={5}
-      sizeDot={15}
-      sizeOutline={30}
-      bgColorDot="purple"
-      bgColorOutline="yellow"
-    />
+    <div>
+      {/* Simple filled cursor */}
+      <CustomCursor 
+        type="one" 
+        size={20} 
+        bgColor="white"
+        clickEffect="pulse"
+      />
+      
+      {/* Dot + outline cursor */}
+      <CustomCursor 
+        type="two"
+        sizeDot={8}
+        sizeOutline={40}
+        bgColorDot="blue"
+        bgColorOutline="white"
+        delay={3}
+      />
+      
+      {/* Outline only cursor */}
+      <CustomCursor 
+        type="three"
+        size={30}
+        bgColor="red"
+        scaleOnHover={2}
+      />
+    </div>
   );
 }
 ```
 
-## 6. Customization
 
-Each cursor component accepts specific props for customization:
+## 🔧 API Reference
 
-- **size**: Adjusts the overall size of the cursor.
 
-- **delay**: Alters the movement delay, creating a trailing effect.
+#### Common Props (All Types)
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `type` | `"one" \| "two" \| "three"` | **Required** | Cursor style type |
+| `delay` | `number` | `0` | Movement delay (0-1000ms) |
+| `useMixBlendDifference` | `boolean` | `true` | Enable difference blend mode |
+| `size` | `number` | `35 / 10 / 35` | Cursor diameter |
+| `scaleOnHover` | `number` | `1.5` | Scale factor when hovering interactive elements |
+| `clickEffect` | `"pulse"` | `undefined` | Enable click pulse effect |
+| `clickEffectColor` | `string` | `"white"` | Pulse effect color |
+| `clickEffectSize` | `number` | `1.5` | Pulse effect scale |
+| `clickEffectDuration` | `number` | `300` | Pulse duration (ms) |
 
-- **bgColor**, **bgColorDot**, **bgColorOutline**: Customizes the color for different cursor elements.
+#### Type "one" Specific Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `bgColor` | `string` | `"white"` | Fill color |
 
-- **sizeDot**, **sizeOutline**: Specifically for `CursorTwo`, these props adjust the sizes of the dot and outline elements.
+#### Type "two" Specific Props  
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `sizeDot` | `number` | `10` | Center dot size |
+| `sizeOutline` | `number` | `45` | Outline size |
+| `bgColorDot` | `string` | `"white"` | Dot color |
+| `bgColorOutline` | `string` | `"white"` | Outline color |
 
-## 7. Support
+#### Type "three" Specific Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `bgColor` | `string` | `"white"` | Border color |
 
-Encountered an issue or have a feature request? Reach out through my [Github account](https://github.com/nsl-nikos)
+## 🎯 Pratical Examples
+
+### Click Effects
+```tsx
+<CustomCursor 
+  type="one"
+  clickEffect="pulse"
+  clickEffectColor="rgba(255, 0, 0, 0.8)"
+  clickEffectSize={10.5}
+  clickEffectDuration={500}
+/>
+```
+
+### Delayed Following
+```tsx
+<CustomCursor 
+  type="two"
+  delay={8}
+  size={10}
+  bgColorOutline="#00ff00"
+/>
+```
+
+### Hover Scaling
+```tsx
+<CustomCursor 
+  type="three"
+  scaleOnHover={2}
+  size={45}
+  bgColor="purple"
+/>
+```
+
+### Mix Blend Mode Disabled
+```tsx
+<CustomCursor 
+  type="one"
+  useMixBlendDifference={false}
+  bgColor="rgba(0, 0, 0, 0.5)"
+/>
+```
+
+## 🎨 Styling Tips
+
+### CSS Integration
+The library automatically hides the default cursor, but you might need to set it manually in some cases:
+
+```css
+* {
+  cursor: none;
+}
+```
+
+### Interactive Elements
+The cursor automatically detects and scales on these elements:
+- `<a>`, `<button>`, `<input>`, `<textarea>`
+- Elements with `role="button"`
+- Elements with `tabindex` (except `-1`)
+- Elements with class `hoverable`
+
+Add the `hoverable` class to custom interactive elements:
+```tsx
+<div className="hoverable">This will trigger hover scaling</div>
+```
+
+## 📦 Bundle Size
+
+- **Unpacked**: ~29.8 kB 
+- **Minified**: ~7.8 kB
+- **Gzipped**: ~3.2 kB (estimated)
+
+## 🔧 TypeScript Support
+
+Full TypeScript support with intelligent prop validation:
+
+```tsx
+// ✅ Valid - TypeScript approves
+<CustomCursor type="two" sizeDot={10} bgColorDot="blue" />
+
+// ❌ Invalid - TypeScript error  
+<CustomCursor type="one" sizeDot={10} />  // sizeDot not valid for type "one"
+```
+
+## 🐛 Troubleshooting
+
+### Cursor Not Showing
+1. Ensure the component is rendered in your app
+2. Check that no CSS is overriding `cursor` styles
+3. Verify the cursor colors aren't matching your background
+4. Set a background color to the page/div if one is not provided (in case useMixBlendDifference is enabled)
+
+### Performance Issues
+1. Avoid setting `delay` values above 10 for smooth performance
+2. Use `useMixBlendDifference={false}` if you experience rendering issues
+3. Consider disabling click effects on high-frequency interactions
+
+### TypeScript Errors
+1. Update to the latest version for best type definitions
+2. Ensure you're only using props valid for your chosen cursor type
+3. Check that `clickEffect` is set to `"pulse"` (only supported value)
+
+## 🤝 Contributing
+
+We welcome contributions! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+## 🔗 Links
+
+- **GitHub**: [nsl-nikos/cursor-style](https://github.com/nsl-nikos)
+- **NPM**: [cursor-style](https://www.npmjs.com/package/cursor-style)
+- **Issues**: [Report bugs or request features](https://github.com/nsl-nikos)
+
+---
+
+Made with ❤️ by [nsl-nikos](https://github.com/nsl-nikos)

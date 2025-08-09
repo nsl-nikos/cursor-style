@@ -1,32 +1,22 @@
 import { useState, useEffect } from "react";
 
-export function useHoverDetection(
-  hoverSelector = "a, button, input, textarea, [role='button'], [tabindex]:not([tabindex='-1']), .hoverable"
-) {
+export function useHoverDetection() {
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    function onMouseMove(event: MouseEvent) {
-      const elemBelow = document.elementFromPoint(event.clientX, event.clientY);
-      if (!elemBelow) {
+    const onMouseMove = (event: MouseEvent) => {
+      const elem = document.elementFromPoint(event.clientX, event.clientY);
+      if (!elem) {
         setIsHovering(false);
         return;
       }
-      let matches = false;
-      try {
-        matches = elemBelow.matches(hoverSelector);
-      } catch {
-        matches = false;
-      }
-
-      setIsHovering(matches);
-    }
+      const isInteractive = elem.matches("a, button, input, textarea, [role='button'], .hoverable");
+      setIsHovering(isInteractive);
+    };
 
     document.addEventListener("mousemove", onMouseMove);
-    return () => {
-      document.removeEventListener("mousemove", onMouseMove);
-    };
-  }, [hoverSelector]);
+    return () => document.removeEventListener("mousemove", onMouseMove);
+  }, []);
 
   return isHovering;
 }

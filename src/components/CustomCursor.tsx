@@ -1,89 +1,161 @@
 import React from "react";
-import CursorOne from "./CursorOne";
-import { CursorTwo } from "./CursorTwo";
-import CursorThree from "./CursorThree";
+import { useCursorDelay } from "./features/useCursorDelay";
+import { useHoverDetection } from "./features/hoverContext";
+import { useClickEffect } from "./features/click-effect/clickEffect";
 
-export const CustomCursor: React.FC<{
-  type: string;
+interface BaseCursorProps {
   delay?: number;
-  size?: number;
-  sizeDot?: number;
-  sizeOutline?: number;
-  bgColor?: string;
-  bgColorDot?: string;
-  bgColorOutline?: string;
   useMixBlendDifference?: boolean;
   scaleOnHover?: number;
+  size?: number;           
   clickEffect?: "pulse";
   clickEffectColor?: string;
   clickEffectSize?: number;
   clickEffectDuration?: number;
-}> = ({
-  type,
-  delay = 0,
-  size,
-  sizeDot,
-  sizeOutline,
-  bgColor,
-  bgColorDot,
-  bgColorOutline,
-  useMixBlendDifference,
-  scaleOnHover,
-  clickEffect,
-  clickEffectColor,
-  clickEffectSize,
-  clickEffectDuration,
-}) => {
-  const clampedDelay = Math.max(0, Math.min(delay, 1000));
+}
 
-  switch (type) {
-    case "one":
-      return (
-        <CursorOne
-          delay={clampedDelay}
-          size={size}
-          bgColor={bgColor}
-          useMixBlendDifference={useMixBlendDifference}
-          scaleOnHover={scaleOnHover}
-          clickEffect={clickEffect}
-          clickEffectColor={clickEffectColor}
-          clickEffectSize={clickEffectSize}
-          clickEffectDuration={clickEffectDuration}
-        />
-      );
-    case "two":
-      return (
-        <CursorTwo
-          delay={clampedDelay}
-          sizeDot={sizeDot}
-          sizeOutline={sizeOutline}
-          bgColorDot={bgColorDot}
-          bgColorOutline={bgColorOutline}
-          useMixBlendDifference={useMixBlendDifference}
-          scaleOnHover={scaleOnHover}
-          clickEffect={clickEffect}
-          clickEffectColor={clickEffectColor}
-          clickEffectSize={clickEffectSize}
-          clickEffectDuration={clickEffectDuration}
-        />
-      );
-    case "three":
-      return (
-        <CursorThree
-          delay={clampedDelay}
-          size={size}
-          bgColor={bgColor}
-          useMixBlendDifference={useMixBlendDifference}
-          scaleOnHover={scaleOnHover}
-          clickEffect={clickEffect}
-          clickEffectColor={clickEffectColor}
-          clickEffectSize={clickEffectSize}
-          clickEffectDuration={clickEffectDuration}
-        />
-      );
-    default:
-      return null;
+interface CursorOneProps extends BaseCursorProps {
+  type: "one";
+  bgColor?: string;
+}
+
+interface CursorTwoProps extends BaseCursorProps {
+  type: "two";
+  sizeDot?: number;       
+  sizeOutline?: number;    
+  bgColorDot?: string;     
+  bgColorOutline?: string; 
+}
+
+interface CursorThreeProps extends BaseCursorProps {
+  type: "three";
+  bgColor?: string;
+}
+
+type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps;
+
+const baseCursorStyle: React.CSSProperties = {
+  position: "fixed",
+  borderRadius: "50%",
+  pointerEvents: "none",
+  cursor: "none",
+  transition: "transform 0.2s ease",
+  zIndex: 2147483647,
+};
+
+export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
+  const {
+    delay = 0,
+    useMixBlendDifference = true,
+    scaleOnHover = 1.5,
+    clickEffect,
+    clickEffectColor = "white",
+    clickEffectSize = 1.5,
+    clickEffectDuration = 300,
+  } = props;
+
+  const clampedDelay = Math.max(0, Math.min(delay, 1000));
+  const isHovering = useHoverDetection();
+  const { position } = useCursorDelay(clampedDelay, { x: 0, y: 0 });
+  const mixBlendMode = useMixBlendDifference ? "difference" : "normal";
+  const scale = isHovering ? scaleOnHover : 1;
+
+  useClickEffect(clickEffect, clickEffectColor, clickEffectSize, clickEffectDuration);
+
+  if (props.type === "one") {
+    const { size = 35, bgColor = "white" } = props;
+    return (
+      <div
+        className="cursor"
+        style={{
+          ...baseCursorStyle,
+          width: `${size}px`,
+          height: `${size}px`,
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          backgroundColor: bgColor,
+          mixBlendMode,
+          transform: `translate(-50%, -50%) scale(${scale})`,
+        }}
+      />
+    );
   }
+
+  if (props.type === "three") {
+    const { size = 35, bgColor = "white" } = props;
+    return (
+      <div
+        className="cursor"
+        style={{
+          ...baseCursorStyle,
+          width: `${size}px`,
+          height: `${size}px`,
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          border: `2px solid ${bgColor}`,
+          backgroundColor: "transparent",
+          mixBlendMode,
+          transform: `translate(-50%, -50%) scale(${scale})`,
+        }}
+      />
+    );
+  }
+
+  if (props.type === "two") {
+    const { 
+      size = 10,
+      sizeDot = size, 
+      sizeOutline = size * 4.5, 
+      bgColorDot = "white",
+      bgColorOutline = "white"
+    } = props;
+
+    const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
+
+    React.useEffect(() => {
+      const handleMouseMove = (event: MouseEvent) => {
+        setMousePos({ x: event.clientX, y: event.clientY });
+      };
+      window.addEventListener("mousemove", handleMouseMove);
+      return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
+    return (
+      <>
+        <div
+          className="cursor"
+          style={{
+            ...baseCursorStyle,
+            width: `${sizeDot}px`,
+            height: `${sizeDot}px`,
+            left: `${mousePos.x}px`,
+            top: `${mousePos.y}px`,
+            backgroundColor: bgColorDot,
+            mixBlendMode,
+            zIndex: 9999,
+            transform: `translate(-50%, -50%) scale(${scale})`,
+          }}
+        />
+        <div
+          className="cursor"
+          style={{
+            ...baseCursorStyle,
+            width: `${sizeOutline}px`,
+            height: `${sizeOutline}px`,
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            border: `2px solid ${bgColorOutline}`,
+            backgroundColor: "transparent",
+            mixBlendMode,
+            zIndex: 9998,
+            transform: `translate(-50%, -50%) scale(${scale})`,
+          }}
+        />
+      </>
+    );
+  }
+
+  return null;
 };
 
 export default CustomCursor;

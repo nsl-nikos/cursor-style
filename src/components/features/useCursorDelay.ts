@@ -5,14 +5,7 @@ interface Position {
   y: number;
 }
 
-const lerp = (start: number, end: number, alpha: number) =>
-  (1 - alpha) * start + alpha * end;
-
-
-export const useCursorDelay = (
-  delay: number = 0,
-  initialPosition: Position
-) => {
+export const useCursorDelay = (delay: number = 0, initialPosition: Position) => {
   const [position, setPosition] = useState<Position>(initialPosition);
   const frame = useRef<number>(0);
   const targetPosition = useRef<Position>(initialPosition);
@@ -26,31 +19,23 @@ export const useCursorDelay = (
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [delay]);
 
   useEffect(() => {
-    if (delay === 0) return; 
+    if (delay === 0) return;
 
     const updatePosition = () => {
-      // Adjust alpha based on delay. With delay as 10, alpha should be minimum (more delay).
-      // As delay approaches 0, alpha should increase, reducing the delay effect.
-      // This maps delay from [0, 10] to alpha [1, 0.1] (inversely proportional)
       const alpha = 1 - delay * 0.09;
-      const newX = lerp(position.x, targetPosition.current.x, alpha);
-      const newY = lerp(position.y, targetPosition.current.y, alpha);
+      const newX = (1 - alpha) * position.x + alpha * targetPosition.current.x;
+      const newY = (1 - alpha) * position.y + alpha * targetPosition.current.y;
+      
       setPosition({ x: newX, y: newY });
       frame.current = requestAnimationFrame(updatePosition);
     };
 
     frame.current = requestAnimationFrame(updatePosition);
-
-    return () => {
-      cancelAnimationFrame(frame.current);
-    };
+    return () => cancelAnimationFrame(frame.current);
   }, [position, delay]);
 
   return { position };
