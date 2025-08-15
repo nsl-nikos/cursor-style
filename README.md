@@ -20,17 +20,9 @@ npm install cursor-style
 - **Seamless Integration**: Drop-in solution for any React project
 - **Mix Blend Modes**: Built-in support for difference blend mode effects
 
-## 🆕 What's New in v1.4.4
+## 🆕 What's New in v1.4.5
 
-### Major API Improvements
-- **New Unified API**: Introducing `CustomCursor` component with type-safe props
-- **Enhanced Type Safety**: TypeScript prevents invalid prop combinations
-- **Massive Bundle Reduction**: 41% smaller than previous version
-- **Click Effects**: Built-in pulse animations for all cursor types
-
-### Breaking Changes
-- Individual cursor imports are NOT available anymore, `CustomCursor` is now the only approach
-- Improved prop validation - invalid props will show TypeScript errors
+- **New Click Effects**: Added `ripple` and `fade` click effects alongside the existing `pulse` effect
 
 ## Cursor Types
 
@@ -95,7 +87,7 @@ function App() {
 | `useMixBlendDifference` | `boolean` | `true` | Enable difference blend mode |
 | `size` | `number` | `35 / 10 / 35` | Cursor diameter |
 | `scaleOnHover` | `number` | `1.5` | Scale factor when hovering interactive elements |
-| `clickEffect` | `"pulse"` | `undefined` | Enable click pulse effect |
+| `clickEffect` | `"pulse" \| "ripple" \| "fade"` | `undefined` | Click animation effect type |
 | `clickEffectColor` | `string` | `"white"` | Pulse effect color |
 | `clickEffectSize` | `number` | `1.5` | Pulse effect scale |
 | `clickEffectDuration` | `number` | `300` | Pulse duration (ms) |

@@ -4,7 +4,7 @@ interface BaseCursorProps {
     useMixBlendDifference?: boolean;
     scaleOnHover?: number;
     size?: number;
-    clickEffect?: "pulse";
+    clickEffect?: "pulse" | "ripple" | "fade";
     clickEffectColor?: string;
     clickEffectSize?: number;
     clickEffectDuration?: number;
