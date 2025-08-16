@@ -8,6 +8,11 @@ interface BaseCursorProps {
     clickEffectColor?: string;
     clickEffectSize?: number;
     clickEffectDuration?: number;
+    magnetEffect?: boolean;
+    magnetStrength?: number;
+    magnetRange?: number;
+    magnetClassName?: string;
+    magnetType?: "attract" | "repel";
 }
 interface CursorOneProps extends BaseCursorProps {
     type: "one";

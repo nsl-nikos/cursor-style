@@ -2,6 +2,7 @@ import React from "react";
 import { useCursorDelay } from "./features/useCursorDelay";
 import { useHoverDetection } from "./features/hoverContext";
 import { useClickEffect } from "./features/click-effect/clickEffect";
+import { useMagnetEffect } from "./features/useMagnetEffect";
 
 interface BaseCursorProps {
   delay?: number;
@@ -12,6 +13,11 @@ interface BaseCursorProps {
   clickEffectColor?: string;
   clickEffectSize?: number;
   clickEffectDuration?: number;
+  magnetEffect?: boolean;
+  magnetStrength?: number;
+  magnetRange?: number;
+  magnetClassName?: string;
+  magnetType?: "attract" | "repel";
 }
 
 interface CursorOneProps extends BaseCursorProps {
@@ -52,11 +58,31 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
     clickEffectColor = "white",
     clickEffectSize = 1.5,
     clickEffectDuration = 300,
+    magnetEffect = false,
+    magnetStrength = 20,
+    magnetRange = 100,
+    magnetClassName = "cursor-magnet",
+    magnetType = "attract",
   } = props;
 
   const clampedDelay = Math.max(0, Math.min(delay, 1000));
   const isHovering = useHoverDetection();
   const { position } = useCursorDelay(clampedDelay, { x: 0, y: 0 });
+  
+  const magnetOffset = useMagnetEffect(
+    position,
+    magnetEffect,
+    magnetStrength,
+    magnetRange,
+    magnetClassName,
+    magnetType
+  );
+  
+  const finalPosition = {
+    x: position.x + magnetOffset.x,
+    y: position.y + magnetOffset.y,
+  };
+  
   const mixBlendMode = useMixBlendDifference ? "difference" : "normal";
   const scale = isHovering ? scaleOnHover : 1;
 
@@ -71,8 +97,8 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           ...baseCursorStyle,
           width: `${size}px`,
           height: `${size}px`,
-          left: `${position.x}px`,
-          top: `${position.y}px`,
+          left: `${finalPosition.x}px`,
+          top: `${finalPosition.y}px`,
           backgroundColor: bgColor,
           mixBlendMode,
           transform: `translate(-50%, -50%) scale(${scale})`,
@@ -90,8 +116,8 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           ...baseCursorStyle,
           width: `${size}px`,
           height: `${size}px`,
-          left: `${position.x}px`,
-          top: `${position.y}px`,
+          left: `${finalPosition.x}px`,
+          top: `${finalPosition.y}px`,
           border: `2px solid ${bgColor}`,
           backgroundColor: "transparent",
           mixBlendMode,
@@ -142,8 +168,8 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             ...baseCursorStyle,
             width: `${sizeOutline}px`,
             height: `${sizeOutline}px`,
-            left: `${position.x}px`,
-            top: `${position.y}px`,
+            left: `${finalPosition.x}px`,
+            top: `${finalPosition.y}px`,
             border: `2px solid ${bgColorOutline}`,
             backgroundColor: "transparent",
             mixBlendMode,

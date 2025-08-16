@@ -9,6 +9,11 @@ interface BaseCursorProps {
     clickEffectColor?: string;
     clickEffectSize?: number;
     clickEffectDuration?: number;
+    magnetEffect?: boolean;
+    magnetStrength?: number;
+    magnetRange?: number;
+    magnetClassName?: string;
+    magnetType?: "attract" | "repel";
 }
 interface CursorOneProps extends BaseCursorProps {
     type: "one";
@@ -28,4 +33,12 @@ interface CursorThreeProps extends BaseCursorProps {
 type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps;
 declare const CustomCursor: React.FC<CustomCursorProps>;
 
-export { CustomCursor };
+interface MagnetConfig {
+    enabled: boolean;
+    strength: number;
+    range: number;
+    className: string;
+    type: "attract" | "repel";
+}
+
+export { CustomCursor, type MagnetConfig };
