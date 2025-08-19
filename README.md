@@ -20,9 +20,13 @@ npm install cursor-style
 - **Seamless Integration**: Drop-in solution for any React project
 - **Mix Blend Modes**: Built-in support for difference blend mode effects
 
-## 🆕 What's New in v1.4.5
+## 🆕 What's New in v1.4.6
 
-- **New Click Effects**: Added `ripple` and `fade` click effects alongside the existing `pulse` effect
+- **🧲 NEW: Magnetic Effect**: Interactive cursor attraction/repulsion to specific elements with precise targeting
+- **Smart Distance Calculation**: Uses closest point on elements for accurate magnetic field detection
+- **Quadratic Falloff**: Natural magnetic behavior that strengthens near elements and fades smoothly
+- **Dominant Element Priority**: Closest magnetic elements get enhanced influence for precise control
+- **Flexible Configuration**: Customizable strength, range, CSS targeting, and attract/repel modes
 
 ## Cursor Types
 
@@ -91,6 +95,11 @@ function App() {
 | `clickEffectColor` | `string` | `"white"` | Pulse effect color |
 | `clickEffectSize` | `number` | `1.5` | Pulse effect scale |
 | `clickEffectDuration` | `number` | `300` | Pulse duration (ms) |
+| `magnetEffect` | `boolean` | `false` | Enable magnetic attraction to elements |
+| `magnetStrength` | `number` | `20` | Magnetic force strength |
+| `magnetRange` | `number` | `100` | Magnetic field range in pixels |
+| `magnetClassName` | `string` | `"cursor-magnet"` | CSS class for magnetic elements |
+| `magnetType` | `"attract" \| "repel"` | `"attract"` | Magnetic behavior type |
 
 #### Type "one" Specific Props
 | Prop | Type | Default | Description |
@@ -120,6 +129,34 @@ function App() {
   clickEffectColor="rgba(255, 0, 0, 0.8)"
   clickEffectSize={10.5}
   clickEffectDuration={500}
+/>
+```
+
+### Magnetic Attraction
+```tsx
+<CustomCursor 
+  type="two"
+  magnetEffect={true}
+  magnetStrength={25}
+  magnetRange={120}
+  magnetClassName="magnetic-element"
+  magnetType="attract"
+/>
+
+{/* Add this class to elements you want to be magnetic */}
+<button className="magnetic-element">Magnetic Button</button>
+<div className="magnetic-element">Magnetic Card</div>
+```
+
+### Magnetic Repulsion
+```tsx
+<CustomCursor 
+  type="one"
+  magnetEffect={true}
+  magnetStrength={15}
+  magnetRange={80}
+  magnetClassName="repel-zone"
+  magnetType="repel"
 />
 ```
 

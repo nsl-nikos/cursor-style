@@ -27,48 +27,58 @@ export const useMagnetEffect = (
     const magnetElements = document.querySelectorAll(`.${className}`);
     let totalForceX = 0;
     let totalForceY = 0;
+    let closestDistance = Infinity;
+    let strongestForce = { x: 0, y: 0 };
 
     magnetElements.forEach((element) => {
       const rect = element.getBoundingClientRect();
       const elementCenterX = rect.left + rect.width / 2;
       const elementCenterY = rect.top + rect.height / 2;
 
-      // Calculate distance from mouse to nearest edge of element
-      const distanceToEdge = Math.max(
-        0,
-        Math.max(
-          rect.left - mousePosition.x,
-          mousePosition.x - rect.right,
-          rect.top - mousePosition.y,
-          mousePosition.y - rect.bottom
-        )
+      const closestX = Math.max(rect.left, Math.min(mousePosition.x, rect.right));
+      const closestY = Math.max(rect.top, Math.min(mousePosition.y, rect.bottom));
+      const preciseDistance = Math.sqrt(
+        Math.pow(mousePosition.x - closestX, 2) + Math.pow(mousePosition.y - closestY, 2)
       );
 
-      // Check if mouse is within range of element (including its "padding")
-      if (distanceToEdge <= range) {
-        // Calculate direction from mouse to element center
+      if (preciseDistance <= range) {
         const deltaX = elementCenterX - mousePosition.x;
         const deltaY = elementCenterY - mousePosition.y;
         const distanceToCenter = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
         if (distanceToCenter > 0) {
-          // Calculate strength based on distance to edge (closer = stronger)
-          const magnetStrength = strength * (1 - distanceToEdge / range);
+          const normalizedDistance = preciseDistance / range;
+          const falloff = Math.pow(1 - normalizedDistance, 2);
+          
+          const magnetStrength = strength * falloff;
           const force = type === "attract" ? magnetStrength : -magnetStrength;
           
           const normalizedX = deltaX / distanceToCenter;
           const normalizedY = deltaY / distanceToCenter;
 
-          totalForceX += normalizedX * force;
-          totalForceY += normalizedY * force;
+          const forceX = normalizedX * force;
+          const forceY = normalizedY * force;
+
+          if (preciseDistance < closestDistance) {
+            closestDistance = preciseDistance;
+            strongestForce = { x: forceX * 1.5, y: forceY * 1.5 }; 
+          }
+
+          totalForceX += forceX;
+          totalForceY += forceY;
         }
       }
     });
 
-    setMagnetPosition({
-      x: Math.max(-50, Math.min(50, totalForceX)),
-      y: Math.max(-50, Math.min(50, totalForceY))
-    });
+    const blendFactor = closestDistance < range * 0.3 ? 0.7 : 0.3;
+    const finalForceX = totalForceX * (1 - blendFactor) + strongestForce.x * blendFactor;
+    const finalForceY = totalForceY * (1 - blendFactor) + strongestForce.y * blendFactor;
+
+    const maxOffset = 60;
+    const clampedX = maxOffset * Math.tanh(finalForceX / maxOffset);
+    const clampedY = maxOffset * Math.tanh(finalForceY / maxOffset);
+
+    setMagnetPosition({ x: clampedX, y: clampedY });
   }, [mousePosition.x, mousePosition.y, enabled, strength, range, className, type]);
 
   return magnetPosition;
