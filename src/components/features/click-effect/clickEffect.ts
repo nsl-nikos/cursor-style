@@ -123,15 +123,19 @@ export const useClickEffect = (
   clickEffect?: ClickEffectType,
   clickEffectColor?: string,
   clickEffectSize?: number,
-  clickEffectDuration?: number
+  clickEffectDuration?: number,
+  overridePosition?: { x: number; y: number }
 ) => {
   React.useEffect(() => {
     if (!clickEffect) return;
     
     const handler = (e: MouseEvent) => {
+      const x = overridePosition?.x ?? e.clientX;
+      const y = overridePosition?.y ?? e.clientY;
+      
       createClickEffect(
-        e.clientX,
-        e.clientY,
+        x,
+        y,
         clickEffect,
         clickEffectColor || "white",
         clickEffectSize || 1.5,
@@ -141,5 +145,5 @@ export const useClickEffect = (
     
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
-  }, [clickEffect, clickEffectColor, clickEffectSize, clickEffectDuration]);
+  }, [clickEffect, clickEffectColor, clickEffectSize, clickEffectDuration, overridePosition]);
 };

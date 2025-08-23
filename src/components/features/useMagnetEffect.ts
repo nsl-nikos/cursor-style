@@ -17,10 +17,13 @@ export const useMagnetEffect = (
   type: "attract" | "repel"
 ) => {
   const [magnetPosition, setMagnetPosition] = React.useState({ x: 0, y: 0 });
+  const [targetPosition, setTargetPosition] = React.useState({ x: 0, y: 0 });
+  const animationRef = React.useRef<number>();
+  const lastHoveredElement = React.useRef<Element | null>(null);
 
   React.useEffect(() => {
     if (!enabled) {
-      setMagnetPosition({ x: 0, y: 0 });
+      setTargetPosition({ x: 0, y: 0 });
       return;
     }
 
@@ -78,8 +81,211 @@ export const useMagnetEffect = (
     const clampedX = maxOffset * Math.tanh(finalForceX / maxOffset);
     const clampedY = maxOffset * Math.tanh(finalForceY / maxOffset);
 
-    setMagnetPosition({ x: clampedX, y: clampedY });
+    setTargetPosition({ x: clampedX, y: clampedY });
   }, [mousePosition.x, mousePosition.y, enabled, strength, range, className, type]);
+
+  React.useEffect(() => {
+    if (!enabled) return;
+
+    let animationId: number;
+    
+    const simulateHover = () => {
+      const isMagnetic = Math.abs(magnetPosition.x) > 5 || Math.abs(magnetPosition.y) > 5;
+      
+      if (isMagnetic) {
+        const finalX = mousePosition.x + magnetPosition.x;
+        const finalY = mousePosition.y + magnetPosition.y;
+        
+   
+        const elementBelow = document.elementFromPoint(finalX, finalY);
+        
+       
+        if (lastHoveredElement.current !== elementBelow) {
+      
+          if (lastHoveredElement.current) {
+         
+            (lastHoveredElement.current as HTMLElement).classList?.remove('magnet-hover');
+            (lastHoveredElement.current as HTMLElement).removeAttribute?.('data-magnet-hover');
+            
+         
+            const mouseOutEvent = new MouseEvent('mouseout', {
+              bubbles: true,
+              cancelable: true,
+              clientX: finalX,
+              clientY: finalY,
+              relatedTarget: elementBelow as Element
+            });
+            lastHoveredElement.current.dispatchEvent(mouseOutEvent);
+            
+            const mouseLeaveEvent = new MouseEvent('mouseleave', {
+              bubbles: false,
+              cancelable: true,
+              clientX: finalX,
+              clientY: finalY,
+              relatedTarget: elementBelow as Element
+            });
+            lastHoveredElement.current.dispatchEvent(mouseLeaveEvent);
+          }
+          
+       
+          if (elementBelow) {
+          
+            (elementBelow as HTMLElement).classList?.add('magnet-hover');
+            (elementBelow as HTMLElement).setAttribute?.('data-magnet-hover', 'true');
+            
+           
+            const mouseEnterEvent = new MouseEvent('mouseenter', {
+              bubbles: false,
+              cancelable: true,
+              clientX: finalX,
+              clientY: finalY,
+              relatedTarget: lastHoveredElement.current as Element
+            });
+            elementBelow.dispatchEvent(mouseEnterEvent);
+            
+            const mouseOverEvent = new MouseEvent('mouseover', {
+              bubbles: true,
+              cancelable: true,
+              clientX: finalX,
+              clientY: finalY,
+              relatedTarget: lastHoveredElement.current as Element
+            });
+            elementBelow.dispatchEvent(mouseOverEvent);
+          }
+          
+          lastHoveredElement.current = elementBelow;
+        }
+      } else {
+    
+        if (lastHoveredElement.current) {
+        
+          (lastHoveredElement.current as HTMLElement).classList?.remove('magnet-hover');
+          (lastHoveredElement.current as HTMLElement).removeAttribute?.('data-magnet-hover');
+          
+          const mouseOutEvent = new MouseEvent('mouseout', {
+            bubbles: true,
+            cancelable: true,
+            clientX: mousePosition.x,
+            clientY: mousePosition.y
+          });
+          lastHoveredElement.current.dispatchEvent(mouseOutEvent);
+          
+          const mouseLeaveEvent = new MouseEvent('mouseleave', {
+            bubbles: false,
+            cancelable: true,
+            clientX: mousePosition.x,
+            clientY: mousePosition.y
+          });
+          lastHoveredElement.current.dispatchEvent(mouseLeaveEvent);
+          
+          lastHoveredElement.current = null;
+        }
+      }
+      
+      animationId = requestAnimationFrame(simulateHover);
+    };
+    
+    animationId = requestAnimationFrame(simulateHover);
+    
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      
+      
+      if (lastHoveredElement.current) {
+        (lastHoveredElement.current as HTMLElement).classList?.remove('magnet-hover');
+        (lastHoveredElement.current as HTMLElement).removeAttribute?.('data-magnet-hover');
+        
+        const mouseOutEvent = new MouseEvent('mouseout', {
+          bubbles: true,
+          cancelable: true,
+          clientX: mousePosition.x,
+          clientY: mousePosition.y
+        });
+        lastHoveredElement.current.dispatchEvent(mouseOutEvent);
+        
+        const mouseLeaveEvent = new MouseEvent('mouseleave', {
+          bubbles: false,
+          cancelable: true,
+          clientX: mousePosition.x,
+          clientY: mousePosition.y
+        });
+        lastHoveredElement.current.dispatchEvent(mouseLeaveEvent);
+        
+        lastHoveredElement.current = null;
+      }
+    };
+  }, [enabled, magnetPosition.x, magnetPosition.y, mousePosition.x, mousePosition.y]);
+
+ 
+  React.useEffect(() => {
+    if (!enabled) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const finalX = mousePosition.x + magnetPosition.x;
+      const finalY = mousePosition.y + magnetPosition.y;
+      
+   
+      const elementBelow = document.elementFromPoint(finalX, finalY);
+      
+      if (elementBelow && (Math.abs(magnetPosition.x) > 5 || Math.abs(magnetPosition.y) > 5)) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+     
+        const syntheticEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          clientX: finalX,
+          clientY: finalY,
+          screenX: e.screenX + magnetPosition.x,
+          screenY: e.screenY + magnetPosition.y
+        });
+        elementBelow.dispatchEvent(syntheticEvent);
+      }
+    };
+
+    document.addEventListener('click', handleClick, true);
+    
+    return () => {
+      document.removeEventListener('click', handleClick, true);
+    };
+  }, [enabled, magnetPosition.x, magnetPosition.y, mousePosition.x, mousePosition.y]);
+
+ 
+  React.useEffect(() => {
+    const animate = () => {
+      setMagnetPosition(current => {
+        const deltaX = targetPosition.x - current.x;
+        const deltaY = targetPosition.y - current.y;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        if (distance < 0.5) {
+          return targetPosition;
+        }
+        
+        const easing = 0.15;
+        const newPosition = {
+          x: current.x + deltaX * easing,
+          y: current.y + deltaY * easing
+        };
+        
+        
+        return newPosition;
+      });
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [targetPosition.x, targetPosition.y, mousePosition.x, mousePosition.y, enabled]);
 
   return magnetPosition;
 };

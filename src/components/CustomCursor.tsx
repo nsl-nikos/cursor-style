@@ -86,7 +86,13 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   const mixBlendMode = useMixBlendDifference ? "difference" : "normal";
   const scale = isHovering ? scaleOnHover : 1;
 
-  useClickEffect(clickEffect, clickEffectColor, clickEffectSize, clickEffectDuration);
+  useClickEffect(
+    clickEffect, 
+    clickEffectColor, 
+    clickEffectSize, 
+    clickEffectDuration,
+    magnetEffect ? finalPosition : undefined
+  );
 
   if (props.type === "one") {
     const { size = 35, bgColor = "white" } = props;
