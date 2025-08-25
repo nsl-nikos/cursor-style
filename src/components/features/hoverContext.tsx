@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 
-export function useHoverDetection() {
+export function useHoverDetection(magneticPosition?: { x: number; y: number }) {
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const onMouseMove = (event: MouseEvent) => {
-      const elem = document.elementFromPoint(event.clientX, event.clientY);
+      const checkX = magneticPosition?.x ?? event.clientX;
+      const checkY = magneticPosition?.y ?? event.clientY;
+      
+      const elem = document.elementFromPoint(checkX, checkY);
       if (!elem) {
         setIsHovering(false);
         return;
@@ -16,7 +19,7 @@ export function useHoverDetection() {
 
     document.addEventListener("mousemove", onMouseMove);
     return () => document.removeEventListener("mousemove", onMouseMove);
-  }, []);
+  }, [magneticPosition?.x, magneticPosition?.y]);
 
   return isHovering;
 }

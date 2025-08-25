@@ -33,12 +33,4 @@ interface CursorThreeProps extends BaseCursorProps {
 type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps;
 declare const CustomCursor: React.FC<CustomCursorProps>;
 
-interface MagnetConfig {
-    enabled: boolean;
-    strength: number;
-    range: number;
-    className: string;
-    type: "attract" | "repel";
-}
-
-export { CustomCursor, type MagnetConfig };
+export { CustomCursor };

@@ -66,7 +66,6 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   } = props;
 
   const clampedDelay = Math.max(0, Math.min(delay, 1000));
-  const isHovering = useHoverDetection();
   const { position } = useCursorDelay(clampedDelay, { x: 0, y: 0 });
   
   const magnetOffset = useMagnetEffect(
@@ -82,6 +81,8 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
     x: position.x + magnetOffset.x,
     y: position.y + magnetOffset.y,
   };
+  
+  const isHovering = useHoverDetection(magnetEffect ? finalPosition : undefined);
   
   const mixBlendMode = useMixBlendDifference ? "difference" : "normal";
   const scale = isHovering ? scaleOnHover : 1;

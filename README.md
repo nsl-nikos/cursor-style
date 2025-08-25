@@ -20,13 +20,10 @@ npm install cursor-style
 - **Seamless Integration**: Drop-in solution for any React project
 - **Mix Blend Modes**: Built-in support for difference blend mode effects
 
-## 🆕 What's New in v1.4.6
+## 🆕 What's New in v1.4.7
 
-- **🧲 NEW: Magnetic Effect**: Interactive cursor attraction/repulsion to specific elements with precise targeting
-- **Smart Distance Calculation**: Uses closest point on elements for accurate magnetic field detection
-- **Quadratic Falloff**: Natural magnetic behavior that strengthens near elements and fades smoothly
-- **Dominant Element Priority**: Closest magnetic elements get enhanced influence for precise control
-- **Flexible Configuration**: Customizable strength, range, CSS targeting, and attract/repel modes
+- **FIXED: Hover Detection**: Magnetic cursor now properly triggers hover effects on target elements
+- **ENHANCED: Click Consistency**: Click events now work reliably with magnetic positioning
 
 ## Cursor Types
 
@@ -212,12 +209,6 @@ Add the `hoverable` class to custom interactive elements:
 <div className="hoverable">This will trigger hover scaling</div>
 ```
 
-## 📦 Bundle Size
-
-- **Unpacked**: ~29.8 kB 
-- **Minified**: ~7.8 kB
-- **Gzipped**: ~3.2 kB (estimated)
-
 ## 🔧 TypeScript Support
 
 Full TypeScript support with intelligent prop validation:
@@ -254,7 +245,7 @@ We welcome contributions! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-MIT License - see LICENSE file for details.
+MIT License
 
 ## 🔗 Links
 
