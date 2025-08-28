@@ -1,5 +1,7 @@
 import React from "react";
 
+// delete this feature when the final version is ready
+
 const createMouseEvent = (type: string, x: number, y: number, relatedTarget?: Element | null) => 
   new MouseEvent(type, { bubbles: type !== 'mouseleave' && type !== 'mouseenter', cancelable: true, clientX: x, clientY: y, relatedTarget });
 
