@@ -26,8 +26,7 @@ export const useCursorDelay = (delay: number = 0, initialPosition: Position) => 
     if (delay === 0) return;
 
     const updatePosition = () => {
-      const ALPHA_FACTOR = 0.09;
-      const alpha = 1 - delay * ALPHA_FACTOR;
+      const alpha = 1 - delay * 0.09;
       const newX = (1 - alpha) * position.x + alpha * targetPosition.current.x;
       const newY = (1 - alpha) * position.y + alpha * targetPosition.current.y;
       
