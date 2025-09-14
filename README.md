@@ -12,7 +12,7 @@ npm install cursor-style
 
 ##  Features
 
-- **Three Cursor Types**: Choose from simple circle, dot+outline, or outline-only cursors
+- **Five Cursor Types**: Choose from simple circle, dot+outline, outline-only, crosshair, or image hover cursors
 - **Click Effects**: Built-in pulse animations on mouse clicks
 - **Extensive Customization**: Control size, colors, delays, and animations
 - **Optimized Performance**: Lightweight bundle with smooth 60fps animations
@@ -20,10 +20,11 @@ npm install cursor-style
 - **Seamless Integration**: Drop-in solution for any React project
 - **Mix Blend Modes**: Built-in support for difference blend mode effects
 
-## 🆕 What's New in v1.4.7
+## 🆕 What's New in v1.4.8
 
-- **FIXED: Hover Detection**: Magnetic cursor now properly triggers hover effects on target elements
-- **ENHANCED: Click Consistency**: Click events now work reliably with magnetic positioning
+- **New Cursor Type 4 - Crosshair**: Advanced crosshair cursor with directional tilt, hover transform, and rotation animation features
+- **New Cursor Type 5 - Image Hover**: Interactive image preview cursor with preloading, smooth animations, and text background effects
+
 
 ## Cursor Types
 
@@ -71,6 +72,21 @@ function App() {
         bgColor="red"
         scaleOnHover={2}
       />
+      
+      {/* Crosshair cursor */}
+      <CustomCursor 
+        type="four"
+        lineColor="blue"
+        tiltEffect={true}
+        hoverTransform={true}
+      />
+      
+      {/* Image hover cursor */}
+      <CustomCursor 
+        type="five"
+        showImages={true}
+        imageSize={250}
+      />
     </div>
   );
 }
@@ -83,7 +99,7 @@ function App() {
 #### Common Props (All Types)
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `type` | `"one" \| "two" \| "three"` | **Required** | Cursor style type |
+| `type` | `"one" \| "two" \| "three" \| "four" \| "five"` | **Required** | Cursor style type |
 | `delay` | `number` | `0` | Movement delay (0-1000ms) |
 | `useMixBlendDifference` | `boolean` | `true` | Enable difference blend mode |
 | `size` | `number` | `35 / 10 / 35` | Cursor diameter |
@@ -115,6 +131,25 @@ function App() {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `bgColor` | `string` | `"white"` | Border color |
+
+#### Type "four" Specific Props (Crosshair)
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `lineColor` | `string` | `"white"` | Color of crosshair lines |
+| `lineThickness` | `number` | `2` | Thickness of lines in pixels |
+| `lineLength` | `number` | `20` | Length of each line in pixels |
+| `rotateAnimation` | `boolean` | `false` | Enable continuous rotation animation |
+| `tiltEffect` | `boolean` | `false` | Enable directional tilt based on movement |
+| `tiltIntensity` | `number` | `15` | Tilt intensity percentage |
+| `hoverTransform` | `boolean` | `false` | Transform to X shape on hover |
+
+#### Type "five" Specific Props (Image Hover)
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `bgColor` | `string` | `"white"` | Border color of base cursor |
+| `showImages` | `boolean` | `false` | Enable image hover functionality |
+| `imageSize` | `number` | `300` | Width of preview images in pixels |
+| `imageFadeDuration` | `number` | `300` | Image fade animation duration (ms) |
 
 ## 🎯 Pratical Examples
 
@@ -184,6 +219,40 @@ function App() {
   useMixBlendDifference={false}
   bgColor="rgba(0, 0, 0, 0.5)"
 />
+```
+
+### Crosshair with Effects
+```tsx
+<CustomCursor 
+  type="four"
+  lineColor="red"
+  lineThickness={3}
+  lineLength={25}
+  tiltEffect={true}
+  tiltIntensity={20}
+  hoverTransform={true}
+  rotateAnimation={false}
+/>
+```
+
+### Image Hover System
+```tsx
+<CustomCursor 
+  type="five"
+  showImages={true}
+  imageSize={300}
+  imageFadeDuration={400}
+  delay={9}
+/>
+
+{/* Add data-cursor-image to elements */}
+<span data-cursor-image="/path/to/image.jpg">
+  Hover me for image preview
+</span>
+
+<button data-cursor-image="https://example.com/photo.png">
+  Product with preview
+</button>
 ```
 
 ## 🎨 Styling Tips

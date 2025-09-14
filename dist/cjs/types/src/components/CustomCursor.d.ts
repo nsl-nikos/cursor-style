@@ -29,6 +29,23 @@ interface CursorThreeProps extends BaseCursorProps {
     type: "three";
     bgColor?: string;
 }
-type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps;
+interface CursorFourProps extends BaseCursorProps {
+    type: "four";
+    lineColor?: string;
+    lineThickness?: number;
+    lineLength?: number;
+    rotateAnimation?: boolean;
+    tiltEffect?: boolean;
+    tiltIntensity?: number;
+    hoverTransform?: boolean;
+}
+interface CursorFiveProps extends BaseCursorProps {
+    type: "five";
+    bgColor?: string;
+    showImages?: boolean;
+    imageSize?: number;
+    imageFadeDuration?: number;
+}
+type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps | CursorFourProps | CursorFiveProps;
 export declare const CustomCursor: React.FC<CustomCursorProps>;
 export default CustomCursor;
