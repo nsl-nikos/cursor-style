@@ -20,11 +20,10 @@ npm install cursor-style
 - **Seamless Integration**: Drop-in solution for any React project
 - **Mix Blend Modes**: Built-in support for difference blend mode effects
 
-## 🆕 What's New in v1.4.8
+## 🆕 What's New in v1.4.9
 
-- **New Cursor Type 4 - Crosshair**: Advanced crosshair cursor with directional tilt, hover transform, and rotation animation features
-- **New Cursor Type 5 - Image Hover**: Interactive image preview cursor with preloading, smooth animations, and text background effects
-
+- **NEW: Cursor Type 6 - Magnetic Morphing**: Shape-morphing cursor that magnetically snaps to elements and transforms to match their exact boundaries
+- **Better TypeScript Support**: More precise type definitions for all cursor variants
 
 ## Cursor Types
 
@@ -82,10 +81,19 @@ function App() {
       />
       
       {/* Image hover cursor */}
-      <CustomCursor 
+      <CustomCursor
         type="five"
         showImages={true}
         imageSize={250}
+      />
+
+      {/* Magnetic morphing cursor */}
+      <CustomCursor
+        type="six"
+        baseSize={20}
+        bgColor="purple"
+        morphDuration={300}
+        morphScale={0.8}
       />
     </div>
   );
@@ -150,6 +158,14 @@ function App() {
 | `showImages` | `boolean` | `false` | Enable image hover functionality |
 | `imageSize` | `number` | `300` | Width of preview images in pixels |
 | `imageFadeDuration` | `number` | `300` | Image fade animation duration (ms) |
+
+#### Type "six" Specific Props (Magnetic Morphing)
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `baseSize` | `number` | `20` | Size of the base circle cursor in pixels |
+| `bgColor` | `string` | `"white"` | Color of the cursor border |
+| `morphDuration` | `number` | `200` | Duration of morphing animation in milliseconds |
+| `morphScale` | `number` | `0.69` | Scale factor for element size (0.1-1.0) |
 
 ## 🎯 Pratical Examples
 
@@ -253,6 +269,23 @@ function App() {
 <button data-cursor-image="https://example.com/photo.png">
   Product with preview
 </button>
+```
+
+### Magnetic Morphing Cursor
+```tsx
+<CustomCursor
+  type="six"
+  baseSize={25}
+  bgColor="cyan"
+  morphDuration={500}
+  morphScale={0.75}
+/>
+
+{/* Cursor automatically morphs to fit these elements */}
+<button>Hover me - I'll be outlined!</button>
+<a href="#">Links work too</a>
+<div className="hoverable">Custom hoverable element</div>
+<input type="text" placeholder="Form inputs morph too" />
 ```
 
 ## 🎨 Styling Tips

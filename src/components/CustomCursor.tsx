@@ -57,7 +57,15 @@ interface CursorFiveProps extends BaseCursorProps {
   imageFadeDuration?: number;
 }
 
-type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps | CursorFourProps | CursorFiveProps;
+interface CursorSixProps extends BaseCursorProps {
+  type: "six";
+  baseSize?: number;
+  bgColor?: string;
+  morphDuration?: number;
+  morphScale?: number;
+}
+
+type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps | CursorFourProps | CursorFiveProps | CursorSixProps;
 
 const baseCursorStyle: React.CSSProperties = {
   position: "fixed",
@@ -163,7 +171,6 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           top: `${finalPosition.y}px`,
           border: `2px solid ${bgColor}`,
           backgroundColor: "transparent",
-          
           mixBlendMode,
           transform: `translate(-50%, -50%) scale(${scale})`,
         }}
@@ -251,12 +258,12 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
           setTiltAngle(angle);
           
-          // Clear existing timeout
+        
           if (resetTimeoutRef.current) {
             clearTimeout(resetTimeoutRef.current);
           }
           
-          // Set new timeout to reset tilt after 150ms of no movement
+          
           resetTimeoutRef.current = setTimeout(() => {
             setTiltAngle(0);
           }, 150);
@@ -298,7 +305,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
     const getTransform = () => {
       if (rotateAnimation) {
-        return "none"; // Animation handles the transform
+        return "none"; 
       } else if (hoverTransform && isHovering) {
         return `translate(-50%, -50%) scale(${scale}) rotate(45deg)`;
       } else if (tiltEffect) {
@@ -340,7 +347,6 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           className="cursor"
           style={{
             ...baseCursorStyle,
-            
             width: `${lineLength}px`,
             height: `${lineThickness}px`,
             left: `${finalPosition.x}px`,
@@ -355,6 +361,116 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           }}
         />
       </>
+    );
+  }
+
+  if (props.type === "six") {
+    const {
+      baseSize = 20,
+      bgColor = "white",
+      morphDuration = 200,
+      morphScale = 0.69
+    } = props;
+
+    const morphSelector = "button, a, input, textarea, select, [role='button'], [tabindex]:not([tabindex='-1']), .hoverable, [data-cursor-hover]";
+    const morphEasing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+
+    const [morphedElement, setMorphedElement] = React.useState<HTMLElement | null>(null);
+    const [morphStyle, setMorphStyle] = React.useState({
+      width: baseSize,
+      height: baseSize,
+      borderRadius: "50%",
+      x: 0,
+      y: 0,
+    });
+
+    React.useEffect(() => {
+      const handleMouseOver = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+
+ 
+        if (target.classList.contains('cursor') ||
+            target === document.body ||
+            target === document.documentElement ||
+            target.tagName === 'HTML' ||
+            target.tagName === 'BODY') {
+          return;
+        }
+
+     
+        if (!target.matches(morphSelector)) {
+          return;
+        }
+
+        const rect = target.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(target);
+
+       
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+      
+        const adjustedWidth = rect.width * morphScale;
+        const adjustedHeight = rect.height * morphScale;
+
+        setMorphedElement(target);
+        setMorphStyle({
+          width: adjustedWidth,
+          height: adjustedHeight,
+          borderRadius: computedStyle.borderRadius || "0px",
+          x: centerX,
+          y: centerY,
+        });
+      };
+
+      const handleMouseOut = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+
+      
+        if (target === morphedElement) {
+          setMorphedElement(null);
+          setMorphStyle({
+            width: baseSize,
+            height: baseSize,
+            borderRadius: "50%",
+            x: 0,
+            y: 0,
+          });
+        }
+      };
+
+      document.addEventListener('mouseover', handleMouseOver);
+      document.addEventListener('mouseout', handleMouseOut);
+
+      return () => {
+        document.removeEventListener('mouseover', handleMouseOver);
+        document.removeEventListener('mouseout', handleMouseOut);
+      };
+    }, [morphSelector, baseSize, morphedElement]);
+
+  
+    const cursorPosition = morphedElement
+      ? { x: morphStyle.x, y: morphStyle.y }
+      : finalPosition;
+
+    return (
+      <div
+        className="cursor"
+        style={{
+          ...baseCursorStyle,
+          width: `${morphStyle.width}px`,
+          height: `${morphStyle.height}px`,
+          left: `${cursorPosition.x}px`,
+          top: `${cursorPosition.y}px`,
+          backgroundColor: "transparent",
+          border: `2px solid ${bgColor}`,
+          borderRadius: morphStyle.borderRadius,
+          mixBlendMode,
+          opacity: isWindowFocused ? 1 : 0,
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          transition: `width ${morphDuration}ms ${morphEasing}, height ${morphDuration}ms ${morphEasing}, border-radius ${morphDuration}ms ${morphEasing}, left ${morphDuration}ms ${morphEasing}, top ${morphDuration}ms ${morphEasing}, transform 0.2s ease, opacity 0.3s ease`,
+        }}
+      />
     );
   }
 
@@ -374,7 +490,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
     const exitTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     const debounceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Inject popup animation CSS
+
     React.useEffect(() => {
       if (!showImages) return;
 
@@ -420,7 +536,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       };
     }, [showImages]);
 
-    // Preload images on mount
+   
     React.useEffect(() => {
       if (!showImages) return;
 
@@ -445,12 +561,12 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
       scanAndPreloadImages();
       
-      // Re-scan periodically for dynamically added elements
+    
       const interval = setInterval(scanAndPreloadImages, 2000);
       return () => clearInterval(interval);
     }, [showImages, preloadedImages]);
 
-    // Hover detection for image elements
+  
     React.useEffect(() => {
       if (!showImages) return;
 
@@ -458,7 +574,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
         const target = e.target as HTMLElement;
         const imageUrl = target.getAttribute('data-cursor-image');
         if (imageUrl) {
-          // Clear any pending timeouts
+        
           if (exitTimeoutRef.current) {
             clearTimeout(exitTimeoutRef.current);
             exitTimeoutRef.current = null;
@@ -468,15 +584,15 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             debounceTimeoutRef.current = null;
           }
           
-          // If not preloaded, preload it now and show after loading
+        
           if (!preloadedImages.has(imageUrl)) {
             const img = new Image();
             img.onload = () => {
               setPreloadedImages(prev => new Set(prev).add(imageUrl));
-              // Show image after it's loaded
+        
               setHoveredImage(imageUrl);
               setImageVisible(true);
-              // Add background animation
+          
               target.style.position = 'relative';
               target.style.zIndex = '9999';
               target.style.background = 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%)';
@@ -489,11 +605,10 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             };
             img.src = imageUrl;
           } else {
-            // Image is preloaded, show immediately with debounce
+      
             debounceTimeoutRef.current = setTimeout(() => {
               setHoveredImage(imageUrl);
               setImageVisible(true);
-              // Ensure hovered element stays above image and add background animation
               target.style.position = 'relative';
               target.style.zIndex = '9999';
               target.style.background = 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%)';
@@ -512,16 +627,16 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       const handleMouseLeave = (e: Event) => {
         const target = e.target as HTMLElement;
         
-        // Clear debounce timeout if pending
+       
         if (debounceTimeoutRef.current) {
           clearTimeout(debounceTimeoutRef.current);
           debounceTimeoutRef.current = null;
         }
         
-        // Debounce exit as well
+       
         debounceTimeoutRef.current = setTimeout(() => {
           setImageVisible(false);
-          // Reset all styles when leaving
+       
           target.style.zIndex = '';
           target.style.background = '';
           target.style.borderRadius = '';
@@ -530,12 +645,11 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           target.style.backgroundSize = '';
           target.style.backgroundPosition = '';
           
-          // Clear any existing timeout and set new one
+  
           if (exitTimeoutRef.current) {
             clearTimeout(exitTimeoutRef.current);
           }
-          
-          // Remove hoveredImage after animation completes
+       
           exitTimeoutRef.current = setTimeout(() => {
             setHoveredImage(null);
             exitTimeoutRef.current = null;
@@ -547,7 +661,6 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
       const elements = document.querySelectorAll('[data-cursor-image]');
       elements.forEach(el => {
-        // Use both mouseenter/leave AND mouseover/out for better reliability
         el.addEventListener('mouseenter', handleMouseEnter);
         el.addEventListener('mouseleave', handleMouseLeave);
         el.addEventListener('mouseover', handleMouseEnter);
@@ -562,7 +675,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           el.removeEventListener('mouseout', handleMouseLeave);
         });
         
-        // Clear timeout on cleanup
+    
         if (exitTimeoutRef.current) {
           clearTimeout(exitTimeoutRef.current);
           exitTimeoutRef.current = null;

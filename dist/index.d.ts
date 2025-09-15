@@ -47,7 +47,14 @@ interface CursorFiveProps extends BaseCursorProps {
     imageSize?: number;
     imageFadeDuration?: number;
 }
-type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps | CursorFourProps | CursorFiveProps;
+interface CursorSixProps extends BaseCursorProps {
+    type: "six";
+    baseSize?: number;
+    bgColor?: string;
+    morphDuration?: number;
+    morphScale?: number;
+}
+type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps | CursorFourProps | CursorFiveProps | CursorSixProps;
 declare const CustomCursor: React.FC<CustomCursorProps>;
 
 export { CustomCursor };
