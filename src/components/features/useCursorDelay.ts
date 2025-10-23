@@ -26,10 +26,12 @@ export const useCursorDelay = (delay: number = 0, initialPosition: Position) => 
     if (delay === 0) return;
 
     const updatePosition = () => {
-      const alpha = 1 - delay * 0.09;
+      // Map delay (0-50ms) to smooth interpolation factor (1.0 to 0.05)
+      // Higher delay = slower following = lower alpha
+      const alpha = Math.max(0.05, 1 - (delay / 50) * 0.95);
       const newX = (1 - alpha) * position.x + alpha * targetPosition.current.x;
       const newY = (1 - alpha) * position.y + alpha * targetPosition.current.y;
-      
+
       setPosition({ x: newX, y: newY });
       frame.current = requestAnimationFrame(updatePosition);
     };

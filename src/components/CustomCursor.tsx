@@ -3,21 +3,79 @@ import { useCursorDelay } from "./features/useCursorDelay";
 import { useHoverDetection } from "./features/hoverContext";
 import { useClickEffect } from "./features/click-effect/clickEffect";
 import { useMagnetEffect } from "./features/useMagnetEffect";
+import type {
+  ScaleOnHoverRange,
+  DelayRange,
+  SizeRange,
+  LineThicknessRange,
+  LineLengthRange,
+  TiltIntensityRange,
+  ImageSizeRange,
+  ImageFadeDurationRange,
+  BaseSizeRange,
+  MorphDurationRange,
+  MagnetRangeValue,
+  MagnetStrengthValue,
+  ClickEffectDurationRange,
+  ClickEffectSizeRange,
+} from "../types/ranges";
 
 interface BaseCursorProps {
-  delay?: number;
+  /**
+   * Cursor smoothing delay in milliseconds (range: 0-50)
+   * Higher values create more lag/trailing effect
+   * @default 0 (9 for cursor type "five")
+   */
+  delay?: DelayRange;
   useMixBlendDifference?: boolean;
-  scaleOnHover?: number;
-  size?: number;           
+  /**
+   * Scale multiplier applied when hovering over elements (range: -10 to +10)
+   * - Negative values (e.g., -5) shrink the cursor
+   * - Positive values (e.g., 5) enlarge the cursor
+   * - 0 means no scale change on hover
+   * @default 0
+   */
+  scaleOnHover?: ScaleOnHoverRange;
+  /**
+   * Base cursor size (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 35 becomes 350px)
+   * @default 35 (varies by cursor type)
+   */
+  size?: SizeRange;
   clickEffect?: "pulse" | "ripple" | "fade";
   clickEffectColor?: string;
-  clickEffectSize?: number;
-  clickEffectDuration?: number;
+  /**
+   * Click effect size multiplier (range: 0-100)
+   * Note: Value is multiplied by 10 internally
+   * @default 1.5
+   */
+  clickEffectSize?: ClickEffectSizeRange;
+  /**
+   * Click effect animation duration (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 30 becomes 300ms)
+   * @default 30
+   */
+  clickEffectDuration?: ClickEffectDurationRange;
   magnetEffect?: boolean;
-  magnetStrength?: number;
-  magnetRange?: number;
+  /**
+   * Magnet effect strength (range: 0-50)
+   * Note: Value is multiplied by 10 internally
+   * @default 2
+   */
+  magnetStrength?: MagnetStrengthValue;
+  /**
+   * Magnet effect range in pixels (range: 0-50)
+   * Note: Value is multiplied by 10 internally (e.g., 10 becomes 100px)
+   * @default 10
+   */
+  magnetRange?: MagnetRangeValue;
   magnetClassName?: string;
   magnetType?: "attract" | "repel";
+  /**
+   * Fade out cursor when window loses focus or user switches tabs
+   * @default true
+   */
+  fadeOnLeave?: boolean;
 }
 
 interface CursorOneProps extends BaseCursorProps {
@@ -27,10 +85,20 @@ interface CursorOneProps extends BaseCursorProps {
 
 interface CursorTwoProps extends BaseCursorProps {
   type: "two";
-  sizeDot?: number;       
-  sizeOutline?: number;    
-  bgColorDot?: string;     
-  bgColorOutline?: string; 
+  /**
+   * Dot cursor size (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 10 becomes 100px)
+   * @default Uses main size prop value
+   */
+  sizeDot?: SizeRange;
+  /**
+   * Outline cursor size (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 45 becomes 450px)
+   * @default 4.5x the main size prop
+   */
+  sizeOutline?: SizeRange;
+  bgColorDot?: string;
+  bgColorOutline?: string;
 }
 
 interface CursorThreeProps extends BaseCursorProps {
@@ -41,11 +109,23 @@ interface CursorThreeProps extends BaseCursorProps {
 interface CursorFourProps extends BaseCursorProps {
   type: "four";
   lineColor?: string;
-  lineThickness?: number;
-  lineLength?: number;
+  /**
+   * Crosshair line thickness in pixels (range: 0-50)
+   * @default 2
+   */
+  lineThickness?: LineThicknessRange;
+  /**
+   * Crosshair line length in pixels (range: 0-100)
+   * @default 30
+   */
+  lineLength?: LineLengthRange;
   rotateAnimation?: boolean;
   tiltEffect?: boolean;
-  tiltIntensity?: number;
+  /**
+   * Tilt effect intensity as percentage (range: 0-100)
+   * @default 15
+   */
+  tiltIntensity?: TiltIntensityRange;
   hoverTransform?: boolean;
 }
 
@@ -53,16 +133,35 @@ interface CursorFiveProps extends BaseCursorProps {
   type: "five";
   bgColor?: string;
   showImages?: boolean;
-  imageSize?: number;
-  imageFadeDuration?: number;
+  /**
+   * Image preview size (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 30 becomes 300px)
+   * @default 30
+   */
+  imageSize?: ImageSizeRange;
+  /**
+   * Image fade animation duration (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 30 becomes 300ms)
+   * @default 30
+   */
+  imageFadeDuration?: ImageFadeDurationRange;
 }
 
 interface CursorSixProps extends BaseCursorProps {
   type: "six";
-  baseSize?: number;
+  /**
+   * Base cursor size (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 2 becomes 20px)
+   * @default 2
+   */
+  baseSize?: BaseSizeRange;
   bgColor?: string;
-  morphDuration?: number;
-  morphScale?: number;
+  /**
+   * Morph animation duration (range: 0-100)
+   * Note: Value is multiplied by 10 internally (e.g., 20 becomes 200ms)
+   * @default 20
+   */
+  morphDuration?: MorphDurationRange;
 }
 
 type CustomCursorProps = CursorOneProps | CursorTwoProps | CursorThreeProps | CursorFourProps | CursorFiveProps | CursorSixProps;
@@ -80,19 +179,36 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   const {
     delay = props.type === "five" ? 9 : 0,
     useMixBlendDifference = true,
-    scaleOnHover = 1.5,
+    scaleOnHover: rawScaleOnHover = 0,
     clickEffect,
     clickEffectColor = "white",
-    clickEffectSize = 1.5,
-    clickEffectDuration = 300,
+    clickEffectSize: rawClickEffectSize = 1.5,
+    clickEffectDuration: rawClickEffectDuration = 30,
     magnetEffect = false,
-    magnetStrength = 20,
-    magnetRange = 100,
+    magnetStrength: rawMagnetStrength = 2,
+    magnetRange: rawMagnetRange = 10,
     magnetClassName = "cursor-magnet",
     magnetType = "attract",
+    fadeOnLeave = true,
   } = props;
 
-  const clampedDelay = Math.max(0, Math.min(delay, 1000));
+  // multiply these by 10 for better ts safety
+  const magnetStrength = Math.max(0, Math.min(rawMagnetStrength, 50)) * 10;
+  const magnetRange = Math.max(0, Math.min(rawMagnetRange, 50)) * 10;
+  const clickEffectSize = Math.max(0, Math.min(rawClickEffectSize, 100)) * 10;
+  const clickEffectDuration = Math.max(0, Math.min(rawClickEffectDuration, 100)) * 10;
+
+  const clampedDelay = Math.max(0, Math.min(delay, 50));
+
+  // convert scale input to actual multiplier
+  const clampedScaleInput = Math.max(-10, Math.min(rawScaleOnHover, 10));
+  let scaleOnHover: number;
+  if (clampedScaleInput < 0) {
+    scaleOnHover = 1 + (clampedScaleInput / 10) * 0.9; // shrink
+  } else {
+    scaleOnHover = 1 + (clampedScaleInput / 10) * 9; // grow
+  }
+
   const { position } = useCursorDelay(clampedDelay, { x: 0, y: 0 });
   
   const [isWindowFocused, setIsWindowFocused] = React.useState(true);
@@ -113,19 +229,37 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   
   const isHovering = useHoverDetection(magnetEffect ? finalPosition : undefined);
 
-  // Window focus/blur detection for cursor visibility
+  // fade on leave detection
   React.useEffect(() => {
+    if (!fadeOnLeave) {
+      setIsWindowFocused(true);
+      return;
+    }
+
     const handleMouseEnter = () => setIsWindowFocused(true);
     const handleMouseLeave = () => setIsWindowFocused(false);
+    const handleFocus = () => setIsWindowFocused(true);
+    const handleBlur = () => setIsWindowFocused(false);
+
+    // detects tab switching
+    const handleVisibilityChange = () => {
+      setIsWindowFocused(!document.hidden);
+    };
 
     document.addEventListener('mouseenter', handleMouseEnter);
     document.addEventListener('mouseleave', handleMouseLeave);
-    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+
     return () => {
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
     };
-  }, []);
+  }, [fadeOnLeave]);
   
   const mixBlendMode = useMixBlendDifference ? "difference" : "normal";
   const scale = isHovering ? scaleOnHover : 1;
@@ -139,7 +273,8 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   );
 
   if (props.type === "one") {
-    const { size = 35, bgColor = "white" } = props;
+    const { size: rawSize = 35, bgColor = "white" } = props;
+    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
     return (
       <div
         className="cursor"
@@ -159,7 +294,8 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   }
 
   if (props.type === "three") {
-    const { size = 35, bgColor = "white" } = props;
+    const { size: rawSize = 35, bgColor = "white" } = props;
+    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
     return (
       <div
         className="cursor"
@@ -179,13 +315,17 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   }
 
   if (props.type === "two") {
-    const { 
-      size = 10,
-      sizeDot = size, 
-      sizeOutline = size * 4.5, 
+    const {
+      size: rawSize = 10,
+      sizeDot: rawSizeDot,
+      sizeOutline: rawSizeOutline,
       bgColorDot = "white",
       bgColorOutline = "white"
     } = props;
+
+    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
+    const sizeDot = rawSizeDot !== undefined ? Math.max(0, Math.min(rawSizeDot, 100)) * 10 : size;
+    const sizeOutline = rawSizeOutline !== undefined ? Math.max(0, Math.min(rawSizeOutline, 100)) * 10 : size * 4.5;
 
     const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
 
@@ -235,15 +375,19 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   }
 
   if (props.type === "four") {
-    const { 
+    const {
       lineColor = "white",
-      lineThickness = 2,
-      lineLength = 30,
+      lineThickness: rawLineThickness = 2,
+      lineLength: rawLineLength = 30,
       rotateAnimation = false,
       tiltEffect = false,
-      tiltIntensity = 15,
+      tiltIntensity: rawTiltIntensity = 15,
       hoverTransform = false
     } = props;
+
+    const lineThickness = Math.max(0, Math.min(rawLineThickness, 50));
+    const lineLength = Math.max(0, Math.min(rawLineLength, 100));
+    const tiltIntensity = Math.max(0, Math.min(rawTiltIntensity, 100));
 
     const [tiltAngle, setTiltAngle] = React.useState(0);
     const lastPositionRef = React.useRef({ x: finalPosition.x, y: finalPosition.y });
@@ -366,16 +510,23 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
   if (props.type === "six") {
     const {
-      baseSize = 20,
+      baseSize: rawBaseSize = 2,
       bgColor = "white",
-      morphDuration = 200,
-      morphScale = 0.69
+      morphDuration: rawMorphDuration = 20
     } = props;
+
+    
+    const baseSize = Math.max(0, Math.min(rawBaseSize, 100)) * 10;
+    const morphDuration = Math.max(0, Math.min(rawMorphDuration, 100)) * 10;
 
     const morphSelector = "button, a, input, textarea, select, [role='button'], [tabindex]:not([tabindex='-1']), .hoverable, [data-cursor-hover]";
     const morphEasing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+    const demorphEasing = "cubic-bezier(0.33, 1, 0.68, 1)"; // Bounce easing for de-morph
 
     const [morphedElement, setMorphedElement] = React.useState<HTMLElement | null>(null);
+    const [isTransitioningMorph, setIsTransitioningMorph] = React.useState(false);
+    const morphTransitionTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const morphedElementRef = React.useRef<HTMLElement | null>(null);
     const [morphStyle, setMorphStyle] = React.useState({
       width: baseSize,
       height: baseSize,
@@ -388,7 +539,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       const handleMouseOver = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
 
- 
+        // Ignore cursor element itself and body/html
         if (target.classList.contains('cursor') ||
             target === document.body ||
             target === document.documentElement ||
@@ -397,7 +548,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           return;
         }
 
-     
+        // Check if target matches morphable selector
         if (!target.matches(morphSelector)) {
           return;
         }
@@ -405,18 +556,23 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
         const rect = target.getBoundingClientRect();
         const computedStyle = window.getComputedStyle(target);
 
-       
+        // Get center position of element
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
 
-      
-        const adjustedWidth = rect.width * morphScale;
-        const adjustedHeight = rect.height * morphScale;
+        // Clear any pending de-morph transition
+        if (morphTransitionTimeoutRef.current) {
+          clearTimeout(morphTransitionTimeoutRef.current);
+          morphTransitionTimeoutRef.current = null;
+        }
+        setIsTransitioningMorph(false);
 
+        // Morph to exact element dimensions (no scaling)
         setMorphedElement(target);
+        morphedElementRef.current = target;
         setMorphStyle({
-          width: adjustedWidth,
-          height: adjustedHeight,
+          width: rect.width,
+          height: rect.height,
           borderRadius: computedStyle.borderRadius || "0px",
           x: centerX,
           y: centerY,
@@ -426,16 +582,29 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       const handleMouseOut = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
 
-      
-        if (target === morphedElement) {
+        // Only de-morph if leaving the currently morphed element
+        if (target === morphedElementRef.current && morphedElementRef.current) {
+          const mouseEvent = e as MouseEvent;
+
           setMorphedElement(null);
+          morphedElementRef.current = null;
+
+          // Start de-morph transition - animate back to circle at exit position
+          setIsTransitioningMorph(true);
           setMorphStyle({
             width: baseSize,
             height: baseSize,
             borderRadius: "50%",
-            x: 0,
-            y: 0,
+            x: mouseEvent.clientX, // Move to exit position
+            y: mouseEvent.clientY,
           });
+
+          // After morphDuration, mark transition as complete
+          const timeoutId = setTimeout(() => {
+            setIsTransitioningMorph(false);
+            morphTransitionTimeoutRef.current = null;
+          }, morphDuration);
+          morphTransitionTimeoutRef.current = timeoutId;
         }
       };
 
@@ -445,10 +614,37 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       return () => {
         document.removeEventListener('mouseover', handleMouseOver);
         document.removeEventListener('mouseout', handleMouseOut);
+        if (morphTransitionTimeoutRef.current) {
+          clearTimeout(morphTransitionTimeoutRef.current);
+        }
       };
-    }, [morphSelector, baseSize, morphedElement]);
+    }, [morphSelector, baseSize, morphDuration]);
 
-  
+    // Follow cursor when not morphed (including during de-morph transition)
+    React.useEffect(() => {
+      if (morphedElement) return;
+
+      setMorphStyle(prev => ({
+        ...prev,
+        x: finalPosition.x,
+        y: finalPosition.y,
+      }));
+    }, [finalPosition.x, finalPosition.y, morphedElement]);
+
+    // Dynamic transition based on state
+    const getTransitionValue = () => {
+      if (morphedElement) {
+        // Morphed: smooth transition for all properties
+        return `left ${morphDuration}ms ${morphEasing}, top ${morphDuration}ms ${morphEasing}, width ${morphDuration}ms ${morphEasing}, height ${morphDuration}ms ${morphEasing}, border-radius ${morphDuration}ms ${morphEasing}, transform 0.2s ease, opacity 0.3s ease`;
+      } else if (isTransitioningMorph) {
+        // De-morphing: faster position transition with bounce, smooth size/shape
+        const positionDuration = morphDuration * 0.6;
+        return `left ${positionDuration}ms ${demorphEasing}, top ${positionDuration}ms ${demorphEasing}, width ${morphDuration}ms ${morphEasing}, height ${morphDuration}ms ${morphEasing}, border-radius ${morphDuration}ms ${morphEasing}, transform 0.2s ease, opacity 0.3s ease`;
+      }
+      // Normal state: no transition (follows cursor instantly)
+      return "transform 0.2s ease, opacity 0.3s ease";
+    };
+
     const cursorPosition = morphedElement
       ? { x: morphStyle.x, y: morphStyle.y }
       : finalPosition;
@@ -463,25 +659,31 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           left: `${cursorPosition.x}px`,
           top: `${cursorPosition.y}px`,
           backgroundColor: "transparent",
-          border: `2px solid ${bgColor}`,
+          outline: `2px solid ${bgColor}`,
+          outlineOffset: "-2px",
           borderRadius: morphStyle.borderRadius,
           mixBlendMode,
           opacity: isWindowFocused ? 1 : 0,
           transform: `translate(-50%, -50%) scale(${scale})`,
-          transition: `width ${morphDuration}ms ${morphEasing}, height ${morphDuration}ms ${morphEasing}, border-radius ${morphDuration}ms ${morphEasing}, left ${morphDuration}ms ${morphEasing}, top ${morphDuration}ms ${morphEasing}, transform 0.2s ease, opacity 0.3s ease`,
+          transition: getTransitionValue(),
         }}
       />
     );
   }
 
   if (props.type === "five") {
-    const { 
-      size = 35, 
+    const {
+      size: rawSize = 35,
       bgColor = "white",
       showImages = false,
-      imageSize = 300,
-      imageFadeDuration = 300
+      imageSize: rawImageSize = 30, // Default 30 * 10 = 300px
+      imageFadeDuration: rawImageFadeDuration = 30 // Default 30 * 10 = 300ms
     } = props;
+
+    
+    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
+    const imageSize = Math.max(0, Math.min(rawImageSize, 100)) * 10;
+    const imageFadeDuration = Math.max(0, Math.min(rawImageFadeDuration, 100)) * 10;
 
     const [hoveredImage, setHoveredImage] = React.useState<string | null>(null);
     const [imageVisible, setImageVisible] = React.useState(false);
@@ -566,9 +768,9 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       return () => clearInterval(interval);
     }, [showImages, preloadedImages]);
 
-  
+
     React.useEffect(() => {
-      if (!showImages) return;
+      if (!showImages || imageSize === 0) return;
 
       const handleMouseEnter = (e: Event) => {
         const target = e.target as HTMLElement;
@@ -674,14 +876,14 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           el.removeEventListener('mouseover', handleMouseEnter);
           el.removeEventListener('mouseout', handleMouseLeave);
         });
-        
-    
+
+
         if (exitTimeoutRef.current) {
           clearTimeout(exitTimeoutRef.current);
           exitTimeoutRef.current = null;
         }
       };
-    }, [showImages, preloadedImages]);
+    }, [showImages, preloadedImages, imageSize, imageFadeDuration]);
 
     return (
       <>
