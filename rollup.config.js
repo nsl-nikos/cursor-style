@@ -15,12 +15,12 @@ export default [
       {
         file: packageJson.main, // CommonJS version
         format: "cjs",
-        sourcemap: false,
+        sourcemap: true,
       },
       {
         file: packageJson.module, // ES module version
         format: "esm",
-        sourcemap: false,
+        sourcemap: true,
       },
     ],
     plugins: [

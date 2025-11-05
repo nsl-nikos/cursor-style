@@ -67,10 +67,10 @@ interface BaseCursorProps {
     magnetClassName?: string;
     magnetType?: "attract" | "repel";
     /**
-     * Fade out cursor when window loses focus or user switches tabs
-     * @default true
+     * Override the cursor opacity (0-1). When provided, this takes precedence over internal opacity logic.
+     * Useful for custom fade in/out animations.
      */
-    fadeOnLeave?: boolean;
+    overrideOpacity?: number;
 }
 interface CursorOneProps extends BaseCursorProps {
     type: "one";
@@ -135,6 +135,33 @@ interface CursorFiveProps extends BaseCursorProps {
      * @default 30
      */
     imageFadeDuration?: ImageFadeDurationRange;
+    /**
+     * Enable text hover effect on elements with data-cursor-image
+     * When enabled, ensures text elements appear above the image preview (higher z-index)
+     * Users can style [data-cursor-image]:hover in their CSS for custom hover effects
+     * @default false
+     */
+    enableTextHoverEffect?: boolean;
+    /**
+     * Delay for image following cursor movement in milliseconds (range: 0-50)
+     * Creates a smooth, floating effect where image lags behind cursor
+     * @default 15
+     */
+    imageFollowDelay?: DelayRange;
+    /**
+     * Horizontal offset of image from cursor position (range: -10 to 10)
+     * Positive values move image to the right, negative to the left
+     * Note: Value is multiplied by 10 internally (e.g., 5 becomes 50px, -2 becomes -20px)
+     * @default 0
+     */
+    imageOffsetX?: ScaleOnHoverRange;
+    /**
+     * Vertical offset of image from cursor position (range: -10 to 10)
+     * Positive values move image down, negative moves up
+     * Note: Value is multiplied by 10 internally (e.g., 5 becomes 50px, -2 becomes -20px)
+     * @default 0
+     */
+    imageOffsetY?: ScaleOnHoverRange;
 }
 interface CursorSixProps extends BaseCursorProps {
     type: "six";

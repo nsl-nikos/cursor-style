@@ -1,6 +1,6 @@
 {
   "name": "cursor-style",
-  "version": "1.4.9",
+  "version": "1.5.0",
   "description": "Multiple prebuilt cursor styles to choose from",
   "main": "dist/cjs/index.js",
   "files": [
@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/nsl-nikos/cursor-style"
   },
-  "homepage": "https://custom-cursor-lemon.vercel.app/",
+  "homepage": "https://cursor-style.info",
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
   "type": "module",

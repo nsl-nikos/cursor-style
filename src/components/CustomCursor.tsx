@@ -72,10 +72,10 @@ interface BaseCursorProps {
   magnetClassName?: string;
   magnetType?: "attract" | "repel";
   /**
-   * Fade out cursor when window loses focus or user switches tabs
-   * @default true
+   * Override the cursor opacity (0-1). When provided, this takes precedence over internal opacity logic.
+   * Useful for custom fade in/out animations.
    */
-  fadeOnLeave?: boolean;
+  overrideOpacity?: number;
 }
 
 interface CursorOneProps extends BaseCursorProps {
@@ -145,6 +145,33 @@ interface CursorFiveProps extends BaseCursorProps {
    * @default 30
    */
   imageFadeDuration?: ImageFadeDurationRange;
+  /**
+   * Enable text hover effect on elements with data-cursor-image
+   * When enabled, ensures text elements appear above the image preview (higher z-index)
+   * Users can style [data-cursor-image]:hover in their CSS for custom hover effects
+   * @default false
+   */
+  enableTextHoverEffect?: boolean;
+  /**
+   * Delay for image following cursor movement in milliseconds (range: 0-50)
+   * Creates a smooth, floating effect where image lags behind cursor
+   * @default 15
+   */
+  imageFollowDelay?: DelayRange;
+  /**
+   * Horizontal offset of image from cursor position (range: -10 to 10)
+   * Positive values move image to the right, negative to the left
+   * Note: Value is multiplied by 10 internally (e.g., 5 becomes 50px, -2 becomes -20px)
+   * @default 0
+   */
+  imageOffsetX?: ScaleOnHoverRange;
+  /**
+   * Vertical offset of image from cursor position (range: -10 to 10)
+   * Positive values move image down, negative moves up
+   * Note: Value is multiplied by 10 internally (e.g., 5 becomes 50px, -2 becomes -20px)
+   * @default 0
+   */
+  imageOffsetY?: ScaleOnHoverRange;
 }
 
 interface CursorSixProps extends BaseCursorProps {
@@ -175,6 +202,10 @@ const baseCursorStyle: React.CSSProperties = {
   zIndex: 2147483647,
 };
 
+// Helper to clamp and multiply values
+const clamp = (val: number, min: number, max: number, multiplier = 1) =>
+  Math.max(min, Math.min(val, max)) * multiplier;
+
 export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   const {
     delay = props.type === "five" ? 9 : 0,
@@ -189,29 +220,54 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
     magnetRange: rawMagnetRange = 10,
     magnetClassName = "cursor-magnet",
     magnetType = "attract",
-    fadeOnLeave = true,
+    overrideOpacity,
   } = props;
 
-  // multiply these by 10 for better ts safety
-  const magnetStrength = Math.max(0, Math.min(rawMagnetStrength, 50)) * 10;
-  const magnetRange = Math.max(0, Math.min(rawMagnetRange, 50)) * 10;
-  const clickEffectSize = Math.max(0, Math.min(rawClickEffectSize, 100)) * 10;
-  const clickEffectDuration = Math.max(0, Math.min(rawClickEffectDuration, 100)) * 10;
+  const magnetStrength = clamp(rawMagnetStrength, 0, 50, 10);
+  const magnetRange = clamp(rawMagnetRange, 0, 50, 10);
+  const clickEffectSize = clamp(rawClickEffectSize, 0, 100, 10);
+  const clickEffectDuration = clamp(rawClickEffectDuration, 0, 100, 10);
+  const clampedDelay = clamp(delay, 0, 50);
 
-  const clampedDelay = Math.max(0, Math.min(delay, 50));
+  const clampedScaleInput = clamp(rawScaleOnHover, -10, 10);
+  const scaleOnHover = clampedScaleInput < 0
+    ? 1 + (clampedScaleInput / 10) * 0.9
+    : 1 + (clampedScaleInput / 10) * 9;
 
-  // convert scale input to actual multiplier
-  const clampedScaleInput = Math.max(-10, Math.min(rawScaleOnHover, 10));
-  let scaleOnHover: number;
-  if (clampedScaleInput < 0) {
-    scaleOnHover = 1 + (clampedScaleInput / 10) * 0.9; // shrink
-  } else {
-    scaleOnHover = 1 + (clampedScaleInput / 10) * 9; // grow
-  }
+  const { position } = useCursorDelay(clampedDelay, { x: -9999, y: -9999 });
 
-  const { position } = useCursorDelay(clampedDelay, { x: 0, y: 0 });
-  
-  const [isWindowFocused, setIsWindowFocused] = React.useState(true);
+  const [hasMovedOnce, setHasMovedOnce] = React.useState(false);
+  const [currentMousePos, setCurrentMousePos] = React.useState({ x: -9999, y: -9999 });
+
+  // Track real mouse position
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setCurrentMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Only show cursor when it's close to actual mouse position
+  React.useEffect(() => {
+    if (position.x === -9999 || position.y === -9999) {
+      setHasMovedOnce(false);
+      return;
+    }
+
+    const distance = Math.sqrt(
+      Math.pow(position.x - currentMousePos.x, 2) +
+      Math.pow(position.y - currentMousePos.y, 2)
+    );
+
+    // Show cursor only when within 50px of actual mouse (very tight threshold)
+    // and hide again if it drifts away
+    if (distance < 50) {
+      setHasMovedOnce(true);
+    } else if (distance > 150) {
+      setHasMovedOnce(false);
+    }
+  }, [position.x, position.y, currentMousePos.x, currentMousePos.y]);
   
   const magnetOffset = useMagnetEffect(
     position,
@@ -229,52 +285,25 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   
   const isHovering = useHoverDetection(magnetEffect ? finalPosition : undefined);
 
-  // fade on leave detection
-  React.useEffect(() => {
-    if (!fadeOnLeave) {
-      setIsWindowFocused(true);
-      return;
-    }
-
-    const handleMouseEnter = () => setIsWindowFocused(true);
-    const handleMouseLeave = () => setIsWindowFocused(false);
-    const handleFocus = () => setIsWindowFocused(true);
-    const handleBlur = () => setIsWindowFocused(false);
-
-    // detects tab switching
-    const handleVisibilityChange = () => {
-      setIsWindowFocused(!document.hidden);
-    };
-
-    document.addEventListener('mouseenter', handleMouseEnter);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-
-    return () => {
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, [fadeOnLeave]);
-  
   const mixBlendMode = useMixBlendDifference ? "difference" : "normal";
   const scale = isHovering ? scaleOnHover : 1;
 
+  // Calculate final opacity: use override if provided, otherwise use internal logic
+  const finalOpacity = overrideOpacity !== undefined
+    ? overrideOpacity
+    : (hasMovedOnce ? 1 : 0);
+
   useClickEffect(
-    clickEffect, 
-    clickEffectColor, 
-    clickEffectSize, 
+    clickEffect,
+    clickEffectColor,
+    clickEffectSize,
     clickEffectDuration,
     magnetEffect ? finalPosition : undefined
   );
 
   if (props.type === "one") {
     const { size: rawSize = 35, bgColor = "white" } = props;
-    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
+    const size = clamp(rawSize, 0, 100, 10);
     return (
       <div
         className="cursor"
@@ -286,7 +315,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           top: `${finalPosition.y}px`,
           backgroundColor: bgColor,
           mixBlendMode,
-          opacity: isWindowFocused ? 1 : 0,
+          opacity: finalOpacity,
           transform: `translate(-50%, -50%) scale(${scale})`,
         }}
       />
@@ -295,7 +324,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
   if (props.type === "three") {
     const { size: rawSize = 35, bgColor = "white" } = props;
-    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
+    const size = clamp(rawSize, 0, 100, 10);
     return (
       <div
         className="cursor"
@@ -308,6 +337,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           border: `2px solid ${bgColor}`,
           backgroundColor: "transparent",
           mixBlendMode,
+          opacity: finalOpacity,
           transform: `translate(-50%, -50%) scale(${scale})`,
         }}
       />
@@ -323,9 +353,9 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       bgColorOutline = "white"
     } = props;
 
-    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
-    const sizeDot = rawSizeDot !== undefined ? Math.max(0, Math.min(rawSizeDot, 100)) * 10 : size;
-    const sizeOutline = rawSizeOutline !== undefined ? Math.max(0, Math.min(rawSizeOutline, 100)) * 10 : size * 4.5;
+    const size = clamp(rawSize, 0, 100, 10);
+    const sizeDot = rawSizeDot !== undefined ? clamp(rawSizeDot, 0, 100, 10) : size;
+    const sizeOutline = rawSizeOutline !== undefined ? clamp(rawSizeOutline, 0, 100, 10) : size * 4.5;
 
     const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
 
@@ -349,7 +379,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             top: `${mousePos.y}px`,
             backgroundColor: bgColorDot,
             mixBlendMode,
-            opacity: isWindowFocused ? 1 : 0,
+            opacity: finalOpacity,
             zIndex: 9999,
             transform: `translate(-50%, -50%) scale(${scale})`,
           }}
@@ -365,7 +395,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             border: `2px solid ${bgColorOutline}`,
             backgroundColor: "transparent",
             mixBlendMode,
-            opacity: isWindowFocused ? 1 : 0,
+            opacity: finalOpacity,
             zIndex: 9998,
             transform: `translate(-50%, -50%) scale(${scale})`,
           }}
@@ -385,9 +415,9 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       hoverTransform = false
     } = props;
 
-    const lineThickness = Math.max(0, Math.min(rawLineThickness, 50));
-    const lineLength = Math.max(0, Math.min(rawLineLength, 100));
-    const tiltIntensity = Math.max(0, Math.min(rawTiltIntensity, 100));
+    const lineThickness = clamp(rawLineThickness, 0, 50);
+    const lineLength = clamp(rawLineLength, 0, 100);
+    const tiltIntensity = clamp(rawTiltIntensity, 0, 100);
 
     const [tiltAngle, setTiltAngle] = React.useState(0);
     const lastPositionRef = React.useRef({ x: finalPosition.x, y: finalPosition.y });
@@ -481,7 +511,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             backgroundColor: lineColor,
             borderRadius: "0",
             mixBlendMode,
-            opacity: isWindowFocused ? 1 : 0,
+            opacity: finalOpacity,
             transform: getTransform(),
             transition: getTransition(),
             ...rotationStyle,
@@ -498,7 +528,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             backgroundColor: lineColor,
             borderRadius: "0",
             mixBlendMode,
-            opacity: isWindowFocused ? 1 : 0,
+            opacity: finalOpacity,
             transform: getTransform(),
             transition: getTransition(),
             ...rotationStyle,
@@ -515,9 +545,8 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       morphDuration: rawMorphDuration = 20
     } = props;
 
-    
-    const baseSize = Math.max(0, Math.min(rawBaseSize, 100)) * 10;
-    const morphDuration = Math.max(0, Math.min(rawMorphDuration, 100)) * 10;
+    const baseSize = clamp(rawBaseSize, 0, 100, 10);
+    const morphDuration = clamp(rawMorphDuration, 0, 100, 10);
 
     const morphSelector = "button, a, input, textarea, select, [role='button'], [tabindex]:not([tabindex='-1']), .hoverable, [data-cursor-hover]";
     const morphEasing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
@@ -663,7 +692,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           outlineOffset: "-2px",
           borderRadius: morphStyle.borderRadius,
           mixBlendMode,
-          opacity: isWindowFocused ? 1 : 0,
+          opacity: finalOpacity,
           transform: `translate(-50%, -50%) scale(${scale})`,
           transition: getTransitionValue(),
         }}
@@ -676,22 +705,67 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       size: rawSize = 35,
       bgColor = "white",
       showImages = false,
-      imageSize: rawImageSize = 30, // Default 30 * 10 = 300px
-      imageFadeDuration: rawImageFadeDuration = 30 // Default 30 * 10 = 300ms
+      imageSize: rawImageSize = 30,
+      imageFadeDuration: rawImageFadeDuration = 30,
+      enableTextHoverEffect = false,
+      imageFollowDelay: rawImageFollowDelay = 15,
+      imageOffsetX: rawImageOffsetX = 0,
+      imageOffsetY: rawImageOffsetY = 0
     } = props;
 
-    
-    const size = Math.max(0, Math.min(rawSize, 100)) * 10;
-    const imageSize = Math.max(0, Math.min(rawImageSize, 100)) * 10;
-    const imageFadeDuration = Math.max(0, Math.min(rawImageFadeDuration, 100)) * 10;
+    const size = clamp(rawSize, 0, 100, 10);
+    const imageSize = clamp(rawImageSize, 0, 100, 10);
+    const imageFadeDuration = clamp(rawImageFadeDuration, 0, 100, 10);
+    const imageFollowDelay = clamp(rawImageFollowDelay, 0, 50);
+    const imageOffsetX = clamp(rawImageOffsetX, -10, 10, 10);
+    const imageOffsetY = clamp(rawImageOffsetY, -10, 10, 10);
 
     const [hoveredImage, setHoveredImage] = React.useState<string | null>(null);
     const [imageVisible, setImageVisible] = React.useState(false);
     const [preloadedImages, setPreloadedImages] = React.useState<Set<string>>(new Set());
+    const [imagePosition, setImagePosition] = React.useState({ x: finalPosition.x, y: finalPosition.y });
     const imageRef = React.useRef<HTMLImageElement>(null);
     const exitTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     const debounceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const imageAnimationRef = React.useRef<number | null>(null);
 
+
+    // Delayed image position tracking
+    React.useEffect(() => {
+      if (!showImages || !imageVisible) return;
+
+      const targetX = finalPosition.x + imageOffsetX;
+      const targetY = finalPosition.y + imageOffsetY;
+
+      if (imageFollowDelay === 0) {
+        // No delay - instant tracking
+        setImagePosition({ x: targetX, y: targetY });
+        return;
+      }
+
+      // Smooth interpolation with delay
+      const animate = () => {
+        setImagePosition(prev => {
+          const interpolationSpeed = 0.15; // Adjust for smoothness (0.1-0.3 recommended)
+
+          const newX = prev.x + (targetX - prev.x) * interpolationSpeed;
+          const newY = prev.y + (targetY - prev.y) * interpolationSpeed;
+
+          return { x: newX, y: newY };
+        });
+
+        imageAnimationRef.current = requestAnimationFrame(animate);
+      };
+
+      imageAnimationRef.current = requestAnimationFrame(animate);
+
+      return () => {
+        if (imageAnimationRef.current !== null) {
+          cancelAnimationFrame(imageAnimationRef.current);
+          imageAnimationRef.current = null;
+        }
+      };
+    }, [showImages, imageVisible, finalPosition.x, finalPosition.y, imageFollowDelay, imageOffsetX, imageOffsetY]);
 
     React.useEffect(() => {
       if (!showImages) return;
@@ -708,7 +782,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             transform: translate(-50%, -50%) scale(1);
           }
         }
-        
+
         @keyframes image-exit {
           0% {
             opacity: 1;
@@ -717,17 +791,6 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
           100% {
             opacity: 0;
             transform: translate(-50%, -50%) scale(0.5);
-          }
-        }
-        
-        @keyframes text-background-popup {
-          0% {
-            background-size: 0% 100%;
-            background-position: 0% 100%;
-          }
-          100% {
-            background-size: 100% 100%;
-            background-position: 0% 100%;
           }
         }
       `;
@@ -776,7 +839,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
         const target = e.target as HTMLElement;
         const imageUrl = target.getAttribute('data-cursor-image');
         if (imageUrl) {
-        
+
           if (exitTimeoutRef.current) {
             clearTimeout(exitTimeoutRef.current);
             exitTimeoutRef.current = null;
@@ -785,41 +848,34 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             clearTimeout(debounceTimeoutRef.current);
             debounceTimeoutRef.current = null;
           }
-          
-        
+
+
           if (!preloadedImages.has(imageUrl)) {
             const img = new Image();
             img.onload = () => {
               setPreloadedImages(prev => new Set(prev).add(imageUrl));
-        
+
               setHoveredImage(imageUrl);
               setImageVisible(true);
-          
-              target.style.position = 'relative';
-              target.style.zIndex = '9999';
-              target.style.background = 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%)';
-              target.style.backgroundRepeat = 'no-repeat';
-              target.style.borderRadius = '4px';
-              target.style.color = 'white';
-              target.style.animation = `text-background-popup ${imageFadeDuration}ms ease forwards`;
-              target.style.backgroundSize = '100% 100%';
-              target.style.backgroundPosition = '0% 100%';
+
+              // Set z-index for text to appear above image if enabled
+              if (enableTextHoverEffect) {
+                target.style.position = 'relative';
+                target.style.zIndex = '10000';
+              }
             };
             img.src = imageUrl;
           } else {
-      
+
             debounceTimeoutRef.current = setTimeout(() => {
               setHoveredImage(imageUrl);
               setImageVisible(true);
-              target.style.position = 'relative';
-              target.style.zIndex = '9999';
-              target.style.background = 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.8) 100%)';
-              target.style.backgroundRepeat = 'no-repeat';
-              target.style.borderRadius = '4px';
-              target.style.color = 'white';
-              target.style.animation = `text-background-popup ${imageFadeDuration}ms ease forwards`;
-              target.style.backgroundSize = '100% 100%';
-              target.style.backgroundPosition = '0% 100%';
+
+              // Set z-index for text to appear above image if enabled
+              if (enableTextHoverEffect) {
+                target.style.position = 'relative';
+                target.style.zIndex = '10000';
+              }
               debounceTimeoutRef.current = null;
             }, 50);
           }
@@ -828,35 +884,30 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
       const handleMouseLeave = (e: Event) => {
         const target = e.target as HTMLElement;
-        
-       
+
         if (debounceTimeoutRef.current) {
           clearTimeout(debounceTimeoutRef.current);
           debounceTimeoutRef.current = null;
         }
-        
-       
+
         debounceTimeoutRef.current = setTimeout(() => {
           setImageVisible(false);
-       
-          target.style.zIndex = '';
-          target.style.background = '';
-          target.style.borderRadius = '';
-          target.style.color = '';
-          target.style.animation = '';
-          target.style.backgroundSize = '';
-          target.style.backgroundPosition = '';
-          
-  
+
+          // Reset z-index when leaving
+          if (enableTextHoverEffect) {
+            target.style.position = '';
+            target.style.zIndex = '';
+          }
+
           if (exitTimeoutRef.current) {
             clearTimeout(exitTimeoutRef.current);
           }
-       
+
           exitTimeoutRef.current = setTimeout(() => {
             setHoveredImage(null);
             exitTimeoutRef.current = null;
           }, imageFadeDuration);
-          
+
           debounceTimeoutRef.current = null;
         }, 50);
       };
@@ -898,7 +949,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             border: `2px solid ${bgColor}`,
             backgroundColor: "transparent",
             mixBlendMode,
-            opacity: isWindowFocused ? 1 : 0,
+            opacity: finalOpacity,
             transform: `translate(-50%, -50%) scale(${scale})`,
           }}
         />
@@ -910,19 +961,19 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
             alt=""
             style={{
               position: 'fixed',
-              left: `${finalPosition.x}px`,
-              top: `${finalPosition.y}px`,
+              left: `${imagePosition.x}px`,
+              top: `${imagePosition.y}px`,
               width: `${imageSize}px`,
               height: 'auto',
               maxHeight: `${imageSize}px`,
               objectFit: 'cover',
               borderRadius: '8px',
               pointerEvents: 'none',
-              zIndex: 1000,
-              opacity: isWindowFocused ? 1 : 0,
+              zIndex: enableTextHoverEffect ? 1000 : 10000,
+              opacity: finalOpacity,
               transform: 'translate(-50%, -50%)',
               transition: 'opacity 0.3s ease',
-              animation: imageVisible 
+              animation: imageVisible
                 ? `image-popup ${imageFadeDuration}ms ease forwards`
                 : `image-exit ${imageFadeDuration}ms ease forwards`,
             }}
