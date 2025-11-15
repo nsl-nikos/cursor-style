@@ -9,25 +9,16 @@
 ![license](https://img.shields.io/npm/l/cursor-style)
 
 
-Started as a personal need for a custom cursor. Now it features six unique types, full customization options, and smooth 60 FPS performance at only 16 KB.
+Started as a personal need for a custom cursor. Now it features six unique types, extensive customization options, and maintains smooth 60 FPS performance at only 16 KB.
 
-[**Documentation & Demo**](https://cursor-style.info) • [**NPM**](https://www.npmjs.com/package/cursor-style)
 
 </div>
 
 
-## What's New in v1.5.0
+## What's New in v1.5.1
 
-**New Props for Cursor Type 5:**
-- `enableTextHoverEffect` - Control text/image z-index layering
-- `imageFollowDelay` - Smooth floating effect for image movement (0-50ms)
-- `imageOffsetX` / `imageOffsetY` - Position offset controls
-
-**Improvements:**
-- Enhanced TypeScript type safety
-- Better JSDoc documentation
-- Performance optimizations
-
+- Optimized default values for all cursor types
+- Better models straight out of the box 
 
 
 ## Installation
@@ -121,7 +112,7 @@ Click effects, magnetic attraction, image previews, mix blend modes, full TypeSc
 | `useMixBlendDifference` | `boolean` | `true` | Blend mode |
 | `overrideOpacity` | `0-1` | - | Custom opacity |
 
-Each cursor type has additional type-specific props. See [documentation](https://cursor-style.info) for complete API reference.
+Each cursor type has specific props. See [documentation](https://cursor-style.info) for complete API reference.
 
 ---
 

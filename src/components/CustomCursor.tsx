@@ -208,9 +208,9 @@ const clamp = (val: number, min: number, max: number, multiplier = 1) =>
 
 export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   const {
-    delay = props.type === "five" ? 9 : 0,
+    delay = props.type === "five" ? 30 : props.type === "one" ? 30 : props.type === "two" ? 40 : props.type === "three" ? 35 : props.type === "four" ? 20 : props.type === "six" ? 25 : 0,
     useMixBlendDifference = true,
-    scaleOnHover: rawScaleOnHover = 0,
+    scaleOnHover: rawScaleOnHover = props.type === "one" ? 1 : props.type === "two" ? 0.5 : props.type === "four" ? 1 : 0,
     clickEffect,
     clickEffectColor = "white",
     clickEffectSize: rawClickEffectSize = 1.5,
@@ -302,7 +302,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   );
 
   if (props.type === "one") {
-    const { size: rawSize = 35, bgColor = "white" } = props;
+    const { size: rawSize = 5, bgColor = "white" } = props;
     const size = clamp(rawSize, 0, 100, 10);
     return (
       <div
@@ -323,7 +323,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
   }
 
   if (props.type === "three") {
-    const { size: rawSize = 35, bgColor = "white" } = props;
+    const { size: rawSize = 4, bgColor = "white" } = props;
     const size = clamp(rawSize, 0, 100, 10);
     return (
       <div
@@ -346,16 +346,14 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
   if (props.type === "two") {
     const {
-      size: rawSize = 10,
-      sizeDot: rawSizeDot,
-      sizeOutline: rawSizeOutline,
+      sizeDot: rawSizeDot = 1,
+      sizeOutline: rawSizeOutline = 4,
       bgColorDot = "white",
       bgColorOutline = "white"
     } = props;
 
-    const size = clamp(rawSize, 0, 100, 10);
-    const sizeDot = rawSizeDot !== undefined ? clamp(rawSizeDot, 0, 100, 10) : size;
-    const sizeOutline = rawSizeOutline !== undefined ? clamp(rawSizeOutline, 0, 100, 10) : size * 4.5;
+    const sizeDot = clamp(rawSizeDot, 0, 100, 10);
+    const sizeOutline = clamp(rawSizeOutline, 0, 100, 10);
 
     const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
 
@@ -410,9 +408,9 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
       lineThickness: rawLineThickness = 2,
       lineLength: rawLineLength = 30,
       rotateAnimation = false,
-      tiltEffect = false,
-      tiltIntensity: rawTiltIntensity = 15,
-      hoverTransform = false
+      tiltEffect = true,
+      tiltIntensity: rawTiltIntensity = 20,
+      hoverTransform = true
     } = props;
 
     const lineThickness = clamp(rawLineThickness, 0, 50);
@@ -608,8 +606,20 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
         });
       };
 
+
+      
       const handleMouseOut = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
+
+      const rect = target.getBoundingClientRect();
+      console.log('🎯 MORPH:', { 
+        left: rect.left, 
+        top: rect.top, 
+        width: rect.width, 
+        height: rect.height,
+        centerX: rect.left + rect.width / 2,
+        centerY: rect.top + rect.height / 2
+      });
 
         // Only de-morph if leaving the currently morphed element
         if (target === morphedElementRef.current && morphedElementRef.current) {
@@ -663,7 +673,6 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
     // Dynamic transition based on state
     const getTransitionValue = () => {
       if (morphedElement) {
-        // Morphed: smooth transition for all properties
         return `left ${morphDuration}ms ${morphEasing}, top ${morphDuration}ms ${morphEasing}, width ${morphDuration}ms ${morphEasing}, height ${morphDuration}ms ${morphEasing}, border-radius ${morphDuration}ms ${morphEasing}, transform 0.2s ease, opacity 0.3s ease`;
       } else if (isTransitioningMorph) {
         // De-morphing: faster position transition with bounce, smooth size/shape
@@ -702,7 +711,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = (props) => {
 
   if (props.type === "five") {
     const {
-      size: rawSize = 35,
+      size: rawSize = 3,
       bgColor = "white",
       showImages = false,
       imageSize: rawImageSize = 30,
